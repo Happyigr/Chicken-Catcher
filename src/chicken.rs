@@ -2,16 +2,41 @@ use crate::{misc::get_random_dir, player::Player, settings::*, Game};
 use bevy::prelude::*;
 use rand::Rng;
 
+trait Behaviour {
+    fn new_rand() -> Self;
+    fn default() -> Self;
+}
+
 #[derive(Component)]
-pub struct Mad;
+pub struct Mad {
+    move_dir: Vec2,
+}
+
+impl Behaviour for Mad {
+    fn default() -> Self {
+        Mad {
+            move_dir: Vec2::new(1., 0.),
+        }
+    }
+    fn new_rand() -> Mad {
+        Mad {
+            move_dir: get_random_dir(),
+        }
+    }
+}
 
 #[derive(Component)]
 pub struct Calm {
     move_dir: Vec2,
 }
 
-impl Default for Calm {
+impl Behaviour for Calm {
     fn default() -> Self {
+        Calm {
+            move_dir: Vec2::new(1., 0.),
+        }
+    }
+    fn new_rand() -> Calm {
         Calm {
             move_dir: get_random_dir(),
         }
@@ -54,18 +79,54 @@ impl ChickenBundle {
                 ..Default::default()
             },
             chicken: Chicken::default(),
-            behaviour: Calm::default(),
+            behaviour: Calm::new_rand(),
+        }
+    }
+}
+
+// todo! sometimes chickens stays, osmewhere will be the behaviour deleted after it added. to fix
+pub fn change_chicken_behaviour(
+    mut commands: Commands,
+    mut chickens_q: Query<(&mut Chicken, Entity)>,
+    time: Res<Time>,
+) {
+    for (mut chicken, ch_ent) in chickens_q.iter_mut() {
+        chicken.behaviour_change_timer.tick(time.delta());
+        if chicken.behaviour_change_timer.finished() {
+            if rand::thread_rng().gen_ratio(3, 10) {
+                commands.entity(ch_ent).insert(Mad::new_rand());
+            } else {
+                commands.entity(ch_ent).insert(Calm::new_rand());
+            }
+        }
+    }
+}
+
+pub fn move_mad_chickens(
+    mut commands: Commands,
+    mut chicken_q: Query<(&mut Transform, &Mad, &Chicken, Entity)>,
+    time: Res<Time>,
+) {
+    for (mut ch_pos, mad, chicken, ch_ent) in chicken_q.iter_mut() {
+        ch_pos.translation += mad.move_dir.extend(0.) * CHICKEN_MAD_SPEED * time.delta_seconds();
+        if chicken.behaviour_change_timer.finished() {
+            println!("Mad deleted");
+            commands.entity(ch_ent).remove::<Mad>();
         }
     }
 }
 
 pub fn move_calm_chickens(
-    mut chicken_q: Query<(&mut Transform, &mut Chicken, &Calm)>,
+    mut commands: Commands,
+    mut chicken_q: Query<(&mut Transform, &Calm, &Chicken, Entity)>,
     time: Res<Time>,
 ) {
-    for (mut ch_pos, mut chicken, calm) in chicken_q.iter_mut() {
-        chicken.behaviour_change_timer.tick(time.delta());
+    for (mut ch_pos, calm, chicken, ch_ent) in chicken_q.iter_mut() {
         ch_pos.translation += calm.move_dir.extend(0.) * CHICKEN_CALM_SPEED * time.delta_seconds();
+        if chicken.behaviour_change_timer.finished() {
+            println!("Calm deleted");
+            commands.entity(ch_ent).remove::<Calm>();
+        }
     }
 }
 
