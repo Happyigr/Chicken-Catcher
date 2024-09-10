@@ -61,7 +61,7 @@ impl ChickenBundle {
             sprite_bundle: SpriteBundle {
                 transform: Transform::from_translation(p_pos + generate_chicken_spawnpoint()),
                 sprite: Sprite {
-                    color: Color::linear_rgb(0.5, 0.0, 0.0),
+                    color: CHICKEN_COLOR,
                     custom_size: Some(Vec2::new(CHICKEN_SIZE, CHICKEN_SIZE)),
                     ..Default::default()
                 },
