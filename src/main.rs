@@ -19,7 +19,7 @@ fn main() {
     app.add_systems(Startup, (spawn_camera, spawn_player));
     app.add_systems(Update, (spawn_chickens, behave_chickens));
     app.add_systems(Update, (move_player, move_camera));
-    app.add_systems(Update, player_chicken_collision);
+    app.add_systems(FixedUpdate, player_chicken_collision);
 
     app.observe(on_add_catchable);
     app.observe(on_remove_catchable);
@@ -30,12 +30,14 @@ fn main() {
 #[derive(Resource)]
 struct Game {
     chicken_spawn_timer: Timer,
+    catchable_chicken: Option<Entity>,
 }
 
 impl Default for Game {
     fn default() -> Self {
         Self {
             chicken_spawn_timer: Timer::from_seconds(CHICKEN_SPAWN_DELTA, TimerMode::Repeating),
+            catchable_chicken: None,
         }
     }
 }

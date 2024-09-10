@@ -1,4 +1,4 @@
-use bevy::color::Color;
+use bevy::{color::Color, prelude::KeyCode};
 
 /// Game section
 pub const CHICKEN_SPAWN_DELTA: f32 = 3.0;
@@ -14,6 +14,12 @@ pub const PLAYER_SPEED: f32 = 100.0;
 pub const PLAYER_SIZE: f32 = 50.0;
 pub const PLAYER_Z: f32 = 4.0;
 pub const PLAYER_CATCHING_RADIUS: f32 = 100.0;
+// control
+pub const PLAYER_KEY_UP: KeyCode = KeyCode::KeyW;
+pub const PLAYER_KEY_DOWN: KeyCode = KeyCode::KeyS;
+pub const PLAYER_KEY_LEFT: KeyCode = KeyCode::KeyA;
+pub const PLAYER_KEY_RIGHT: KeyCode = KeyCode::KeyD;
+pub const PLAYER_KEY_CATCH: KeyCode = KeyCode::KeyE;
 
 /// Chicken section
 pub const CHICKEN_CALM_SPEED: f32 = 30.0;

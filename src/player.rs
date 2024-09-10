@@ -1,6 +1,6 @@
-use bevy::prelude::*;
+use bevy::{math::NormedVectorSpace, prelude::*};
 
-use crate::{chicken::Chicken, settings::*};
+use crate::{chicken::Chicken, settings::*, Game};
 
 #[derive(Component)]
 pub struct Player {
@@ -8,15 +8,17 @@ pub struct Player {
     k_down: KeyCode,
     k_left: KeyCode,
     k_right: KeyCode,
+    k_catch: KeyCode,
 }
 
 impl Default for Player {
     fn default() -> Self {
         Self {
-            k_up: KeyCode::KeyW,
-            k_down: KeyCode::KeyS,
-            k_left: KeyCode::KeyA,
-            k_right: KeyCode::KeyD,
+            k_up: PLAYER_KEY_UP,
+            k_down: PLAYER_KEY_DOWN,
+            k_left: PLAYER_KEY_LEFT,
+            k_right: PLAYER_KEY_RIGHT,
+            k_catch: PLAYER_KEY_CATCH,
         }
     }
 }
@@ -50,22 +52,46 @@ pub struct Catchable;
 pub fn player_chicken_collision(
     mut commands: Commands,
     player_q: Query<&Transform, With<Player>>,
-    catchable_chickens_q: Query<(&Transform, Entity), (With<Chicken>, With<Catchable>)>,
-    other_chickens_q: Query<(&Transform, Entity), (With<Chicken>, Without<Catchable>)>,
+    mut game: ResMut<Game>,
+    chickens_q: Query<(&Transform, Entity), With<Chicken>>,
 ) {
     let p_pos = player_q.get_single().unwrap();
-    for (ch_pos, ch_ent) in other_chickens_q.iter() {
-        if p_pos.translation.distance(ch_pos.translation) < PLAYER_CATCHING_RADIUS {
-            commands.entity(ch_ent).insert(Catchable);
-        }
-    }
+    // if there are one chicken to catch
+    if let Some(catchable_ch_ent) = game.catchable_chicken {
+        let (catchable_ch_pos, _) = chickens_q.get(catchable_ch_ent).unwrap();
 
-    for (ch_pos, ch_ent) in catchable_chickens_q.iter() {
-        if p_pos.translation.distance(ch_pos.translation) >= PLAYER_CATCHING_RADIUS {
-            commands.entity(ch_ent).remove::<Catchable>();
+        for (ch_pos, ch_ent) in chickens_q.iter() {
+            // and one chicken is nearer to the player
+            if p_pos.translation.distance(ch_pos.translation)
+                < p_pos.translation.distance(catchable_ch_pos.translation)
+            {
+                // change the catchable chicken to it
+                commands.entity(catchable_ch_ent).remove::<Catchable>();
+                commands.entity(ch_ent).insert(Catchable);
+                game.catchable_chicken = Some(ch_ent);
+            // and this chicken ran away too far
+            } else if p_pos.translation.distance(catchable_ch_pos.translation)
+                >= PLAYER_CATCHING_RADIUS
+            {
+                // make this chicken not catchable
+                commands.entity(catchable_ch_ent).remove::<Catchable>();
+                game.catchable_chicken = None;
+            }
+        }
+    // else try to find some cathchable chicken
+    } else {
+        for (ch_pos, ch_ent) in chickens_q.iter() {
+            if p_pos.translation.distance(ch_pos.translation) < PLAYER_CATCHING_RADIUS {
+                // and make it cathable
+                game.catchable_chicken = Some(ch_ent);
+                commands.entity(ch_ent).insert(Catchable);
+                break;
+            }
         }
     }
 }
+
+pub fn catch_chicken(mut commands: Commands) {}
 
 pub fn on_add_catchable(
     trigger: Trigger<OnAdd, Catchable>,
