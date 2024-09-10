@@ -1,5 +1,5 @@
 /// Game section
-pub const CHICKEN_SPAWN_DELTA: f32 = 5.0;
+pub const CHICKEN_SPAWN_DELTA: f32 = 3.0;
 
 /// Camera section
 pub const MAX_CAMERA_SPEED: f32 = 50.0;

@@ -2,50 +2,38 @@ use crate::{misc::get_random_dir, player::Player, settings::*, Game};
 use bevy::prelude::*;
 use rand::Rng;
 
-trait Behaviour {
-    fn new_rand() -> Self;
-    fn default() -> Self;
-}
-
-#[derive(Component)]
-pub struct Mad {
-    move_dir: Vec2,
-}
-
-impl Behaviour for Mad {
-    fn default() -> Self {
-        Mad {
-            move_dir: Vec2::new(1., 0.),
-        }
-    }
-    fn new_rand() -> Mad {
-        Mad {
-            move_dir: get_random_dir(),
-        }
-    }
-}
-
-#[derive(Component)]
-pub struct Calm {
-    move_dir: Vec2,
-}
-
-impl Behaviour for Calm {
-    fn default() -> Self {
-        Calm {
-            move_dir: Vec2::new(1., 0.),
-        }
-    }
-    fn new_rand() -> Calm {
-        Calm {
-            move_dir: get_random_dir(),
-        }
-    }
+#[derive(Default)]
+enum Behaviour {
+    Calm,
+    Mad,
+    #[default]
+    Idle,
 }
 
 #[derive(Component)]
 pub struct Chicken {
     behaviour_change_timer: Timer,
+    behaviour: Behaviour,
+    move_dir: Option<Vec2>,
+}
+
+impl Chicken {
+    fn change_behaviour_to(&mut self, next_beh: Behaviour) {
+        match next_beh {
+            Behaviour::Calm => {
+                self.behaviour = Behaviour::Calm;
+                self.move_dir = Some(get_random_dir());
+            }
+            Behaviour::Mad => {
+                self.behaviour = Behaviour::Mad;
+                self.move_dir = Some(get_random_dir());
+            }
+            Behaviour::Idle => {
+                self.behaviour = Behaviour::Idle;
+                self.move_dir = None;
+            }
+        }
+    }
 }
 
 impl Default for Chicken {
@@ -55,6 +43,8 @@ impl Default for Chicken {
                 BEHAVIOUR_CHANGE_DELTA,
                 TimerMode::Repeating,
             ),
+            behaviour: Behaviour::default(),
+            move_dir: None,
         }
     }
 }
@@ -63,7 +53,6 @@ impl Default for Chicken {
 pub struct ChickenBundle {
     sprite_bundle: SpriteBundle,
     chicken: Chicken,
-    behaviour: Calm,
 }
 
 impl ChickenBundle {
@@ -79,53 +68,35 @@ impl ChickenBundle {
                 ..Default::default()
             },
             chicken: Chicken::default(),
-            behaviour: Calm::new_rand(),
         }
     }
 }
 
 // todo! sometimes chickens stays, osmewhere will be the behaviour deleted after it added. to fix
-pub fn change_chicken_behaviour(
-    mut commands: Commands,
-    mut chickens_q: Query<(&mut Chicken, Entity)>,
-    time: Res<Time>,
-) {
-    for (mut chicken, ch_ent) in chickens_q.iter_mut() {
+pub fn behave_chickens(mut chickens_q: Query<(&mut Chicken, &mut Transform)>, time: Res<Time>) {
+    for (mut chicken, mut ch_pos) in chickens_q.iter_mut() {
         chicken.behaviour_change_timer.tick(time.delta());
+
         if chicken.behaviour_change_timer.finished() {
-            if rand::thread_rng().gen_ratio(3, 10) {
-                commands.entity(ch_ent).insert(Mad::new_rand());
+            if rand::thread_rng().gen_ratio(5, 10) {
+                chicken.change_behaviour_to(Behaviour::Mad);
+            } else if rand::thread_rng().gen_ratio(5, 10) {
+                chicken.change_behaviour_to(Behaviour::Calm);
             } else {
-                commands.entity(ch_ent).insert(Calm::new_rand());
+                chicken.change_behaviour_to(Behaviour::Idle);
             }
         }
-    }
-}
 
-pub fn move_mad_chickens(
-    mut commands: Commands,
-    mut chicken_q: Query<(&mut Transform, &Mad, &Chicken, Entity)>,
-    time: Res<Time>,
-) {
-    for (mut ch_pos, mad, chicken, ch_ent) in chicken_q.iter_mut() {
-        ch_pos.translation += mad.move_dir.extend(0.) * CHICKEN_MAD_SPEED * time.delta_seconds();
-        if chicken.behaviour_change_timer.finished() {
-            println!("Mad deleted");
-            commands.entity(ch_ent).remove::<Mad>();
-        }
-    }
-}
-
-pub fn move_calm_chickens(
-    mut commands: Commands,
-    mut chicken_q: Query<(&mut Transform, &Calm, &Chicken, Entity)>,
-    time: Res<Time>,
-) {
-    for (mut ch_pos, calm, chicken, ch_ent) in chicken_q.iter_mut() {
-        ch_pos.translation += calm.move_dir.extend(0.) * CHICKEN_CALM_SPEED * time.delta_seconds();
-        if chicken.behaviour_change_timer.finished() {
-            println!("Calm deleted");
-            commands.entity(ch_ent).remove::<Calm>();
+        match chicken.behaviour {
+            Behaviour::Calm => {
+                ch_pos.translation +=
+                    chicken.move_dir.unwrap().extend(0.) * CHICKEN_CALM_SPEED * time.delta_seconds()
+            }
+            Behaviour::Mad => {
+                ch_pos.translation +=
+                    chicken.move_dir.unwrap().extend(0.) * CHICKEN_MAD_SPEED * time.delta_seconds()
+            }
+            Behaviour::Idle => {} // do nothing, this is real idle :)
         }
     }
 }
@@ -146,7 +117,7 @@ pub fn spawn_chickens(
 }
 
 // generates the chicken spawnpoint, that are not near the player, and not to far from it
-pub fn generate_chicken_spawnpoint() -> Vec3 {
+fn generate_chicken_spawnpoint() -> Vec3 {
     let distance_to_player = rand::thread_rng()
         .gen_range(MIN_CHICKEN_DISTANCE_TO_PLAYER..MAX_CHICKEN_DISTANCE_TO_PLAYER);
 
