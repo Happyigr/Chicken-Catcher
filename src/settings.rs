@@ -14,6 +14,7 @@ pub const PLAYER_SPEED: f32 = 100.0;
 pub const PLAYER_SIZE: f32 = 50.0;
 pub const PLAYER_Z: f32 = 4.0;
 pub const PLAYER_CATCHING_RADIUS: f32 = 100.0;
+pub const MAX_DEFAULT_INVENTORY_SPACE: usize = 5;
 // control
 pub const PLAYER_KEY_UP: KeyCode = KeyCode::KeyW;
 pub const PLAYER_KEY_DOWN: KeyCode = KeyCode::KeyS;

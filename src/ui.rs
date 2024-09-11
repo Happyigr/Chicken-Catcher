@@ -2,6 +2,12 @@ use bevy::prelude::*;
 
 use crate::Game;
 
+#[derive(Event, Default)]
+pub struct EvSpawnPopup;
+
+#[derive(Component)]
+pub struct Popup(Timer);
+
 #[derive(Component)]
 pub struct CatchedChickenScore;
 
@@ -50,5 +56,36 @@ pub fn change_ui(
 
     let mut inventory_text = inventory_chicken_q.get_single_mut().unwrap();
     inventory_text.sections[0].value =
-        format!("Chickens in inventory: {}", game.holded_chickens_amount);
+        format!("Chickens in inventory: {}", game.inventory_chickens_amount);
+}
+
+pub fn popup(mut popup_event: EventReader<EvSpawnPopup>, mut commands: Commands) {
+    for _ in popup_event.read() {
+        commands.spawn((
+            TextBundle::from_section(
+                format!("The max chickens are catched"),
+                TextStyle::default(),
+            )
+            .with_style(Style {
+                position_type: PositionType::Relative,
+                top: Val::Px(50.),
+                justify_content: JustifyContent::Center,
+                ..Default::default()
+            }),
+            Popup(Timer::from_seconds(10., TimerMode::Once)),
+        ));
+    }
+}
+
+pub fn cleanup_popups(
+    mut commands: Commands,
+    mut popups: Query<(Entity, &mut Popup)>,
+
+    time: Res<Time>,
+) {
+    for (popup_ent, mut popup) in popups.iter_mut() {
+        if popup.0.tick(time.delta()).just_finished() {
+            commands.entity(popup_ent).despawn_recursive();
+        }
+    }
 }

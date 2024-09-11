@@ -1,6 +1,6 @@
 use bevy::{math::NormedVectorSpace, prelude::*};
 
-use crate::{chicken::Chicken, settings::*, Game};
+use crate::{chicken::Chicken, settings::*, ui::EvSpawnPopup, Game};
 
 #[derive(Component)]
 pub struct Player {
@@ -96,15 +96,20 @@ pub fn catch_chicken(
     player_q: Query<&Player>,
     mut game: ResMut<Game>,
     input: Res<ButtonInput<KeyCode>>,
+    mut popup_ev: EventWriter<EvSpawnPopup>,
 ) {
     let player = player_q.get_single().unwrap();
 
     if input.pressed(player.k_catch) && game.catchable_chicken.is_some() {
-        commands
-            .entity(game.catchable_chicken.unwrap())
-            .despawn_recursive();
-        game.catchable_chicken = None;
-        game.catched_chickens_amount += 1;
+        if game.inventory_chickens_amount >= MAX_DEFAULT_INVENTORY_SPACE {
+            popup_ev.send_default();
+        } else {
+            commands
+                .entity(game.catchable_chicken.unwrap())
+                .despawn_recursive();
+            game.catchable_chicken = None;
+            game.inventory_chickens_amount += 1;
+        }
     }
 }
 
