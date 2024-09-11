@@ -91,7 +91,22 @@ pub fn player_chicken_collision(
     }
 }
 
-pub fn catch_chicken(mut commands: Commands) {}
+pub fn catch_chicken(
+    mut commands: Commands,
+    player_q: Query<&Player>,
+    mut game: ResMut<Game>,
+    input: Res<ButtonInput<KeyCode>>,
+) {
+    let player = player_q.get_single().unwrap();
+
+    if input.pressed(player.k_catch) && game.catchable_chicken.is_some() {
+        commands
+            .entity(game.catchable_chicken.unwrap())
+            .despawn_recursive();
+        game.catchable_chicken = None;
+        game.catched_chickens_amount += 1;
+    }
+}
 
 pub fn on_add_catchable(
     trigger: Trigger<OnAdd, Catchable>,
