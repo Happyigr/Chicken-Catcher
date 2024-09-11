@@ -69,7 +69,7 @@ pub fn popup(mut popup_event: EventReader<EvSpawnPopup>, mut commands: Commands)
             .with_style(Style {
                 position_type: PositionType::Relative,
                 top: Val::Px(50.),
-                justify_content: JustifyContent::Center,
+                justify_self: JustifySelf::Center,
                 ..Default::default()
             }),
             Popup(Timer::from_seconds(10., TimerMode::Once)),

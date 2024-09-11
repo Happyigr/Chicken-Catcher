@@ -1,5 +1,5 @@
 # To Do
-[ ] - Player catching the chickens
+[x] - Player catching the chickens
 [ ] - The base, where chickens need to be dropped
 [ ] - updates of the player (the player capacity, catch speed ....)
 [ ] - angry chickens (with low chance, the chicken will attack the player)

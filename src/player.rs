@@ -100,13 +100,11 @@ pub fn catch_chicken(
 ) {
     let player = player_q.get_single().unwrap();
 
-    if input.pressed(player.k_catch) && game.catchable_chicken.is_some() {
+    if input.just_pressed(player.k_catch) && game.catchable_chicken.is_some() {
         if game.inventory_chickens_amount >= MAX_DEFAULT_INVENTORY_SPACE {
             popup_ev.send_default();
         } else {
-            commands
-                .entity(game.catchable_chicken.unwrap())
-                .despawn_recursive();
+            commands.entity(game.catchable_chicken.unwrap()).despawn();
             game.catchable_chicken = None;
             game.inventory_chickens_amount += 1;
         }
