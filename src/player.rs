@@ -1,4 +1,4 @@
-use bevy::{math::NormedVectorSpace, prelude::*};
+use bevy::prelude::*;
 
 use crate::{chicken::Chicken, settings::*, ui::EvSpawnPopup, Game};
 

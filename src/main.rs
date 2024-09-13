@@ -1,3 +1,4 @@
+mod base;
 mod camera;
 mod chicken;
 mod misc;
@@ -5,6 +6,7 @@ mod player;
 mod settings;
 mod ui;
 
+use base::spawn_player_base;
 use bevy::prelude::*;
 use camera::{move_camera, spawn_camera};
 use chicken::{behave_chickens, spawn_chickens};
@@ -23,7 +25,10 @@ fn main() {
 
     app.insert_resource(Game::default());
 
-    app.add_systems(Startup, (spawn_camera, spawn_player, spawn_ui));
+    app.add_systems(
+        Startup,
+        (spawn_camera, spawn_player, spawn_ui, spawn_player_base),
+    );
 
     // chicken systems
     app.add_systems(Update, (spawn_chickens, behave_chickens));

@@ -22,6 +22,13 @@ pub const PLAYER_KEY_LEFT: KeyCode = KeyCode::KeyA;
 pub const PLAYER_KEY_RIGHT: KeyCode = KeyCode::KeyD;
 pub const PLAYER_KEY_CATCH: KeyCode = KeyCode::KeyE;
 
+/// base section
+pub const BASE_RADIUS: f32 = 100.0;
+pub const BASE_SIZE: f32 = 50.0;
+pub const BASE_COLOR: Color = Color::linear_rgb(0.0, 0.0, 0.5);
+pub const BASE_Z: f32 = 1.0;
+pub const BASE_CATCHING_RADIUS_COLOR: Color = Color::linear_rgb(0.0, 0.0, 0.5);
+
 /// Chicken section
 pub const CHICKEN_CALM_SPEED: f32 = 30.0;
 pub const CHICKEN_MAD_SPEED: f32 = 75.0;
