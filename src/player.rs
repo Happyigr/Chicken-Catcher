@@ -102,6 +102,10 @@ pub fn player_chicken_collision(
     }
 }
 
+// the function that sends events, after the player presses the control key
+pub fn control_player() {}
+
+// rewrite as event
 pub fn try_give_chickens_to_base(
     base_q: Query<(&Transform, &Base), Without<Player>>,
     player_q: Query<(&Transform, &Player), Without<Base>>,
@@ -118,6 +122,7 @@ pub fn try_give_chickens_to_base(
     }
 }
 
+// rewrite as event
 pub fn catch_chicken(
     mut commands: Commands,
     player_q: Query<&Player>,
