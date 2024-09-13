@@ -21,6 +21,7 @@ pub const PLAYER_KEY_DOWN: KeyCode = KeyCode::KeyS;
 pub const PLAYER_KEY_LEFT: KeyCode = KeyCode::KeyA;
 pub const PLAYER_KEY_RIGHT: KeyCode = KeyCode::KeyD;
 pub const PLAYER_KEY_CATCH: KeyCode = KeyCode::KeyE;
+pub const PLAYER_KEY_GIVE: KeyCode = KeyCode::KeyQ;
 
 /// base section
 pub const BASE_RADIUS: f32 = 100.0;

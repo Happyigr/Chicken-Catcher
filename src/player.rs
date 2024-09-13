@@ -1,6 +1,12 @@
-use bevy::prelude::*;
+use bevy::{math::NormedVectorSpace, prelude::*};
 
-use crate::{chicken::Chicken, settings::*, ui::EvSpawnPopup, Game};
+use crate::{
+    base::{Base, BaseCatchingRadius},
+    chicken::Chicken,
+    settings::*,
+    ui::EvSpawnPopup,
+    Game,
+};
 
 #[derive(Component)]
 pub struct Player {
@@ -9,6 +15,7 @@ pub struct Player {
     k_left: KeyCode,
     k_right: KeyCode,
     k_catch: KeyCode,
+    k_give: KeyCode,
 }
 
 impl Default for Player {
@@ -19,6 +26,7 @@ impl Default for Player {
             k_left: PLAYER_KEY_LEFT,
             k_right: PLAYER_KEY_RIGHT,
             k_catch: PLAYER_KEY_CATCH,
+            k_give: PLAYER_KEY_GIVE,
         }
     }
 }
@@ -53,7 +61,10 @@ pub fn player_chicken_collision(
     mut commands: Commands,
     player_q: Query<&Transform, With<Player>>,
     mut game: ResMut<Game>,
-    chickens_q: Query<(&Transform, Entity), With<Chicken>>,
+    chickens_q: Query<
+        (&Transform, Entity),
+        (With<Chicken>, Without<Base>, Without<BaseCatchingRadius>),
+    >,
 ) {
     let p_pos = player_q.get_single().unwrap();
     // if there are one chicken to catch
@@ -91,6 +102,22 @@ pub fn player_chicken_collision(
     }
 }
 
+pub fn try_give_chickens_to_base(
+    base_q: Query<(&Transform, &Base), Without<Player>>,
+    player_q: Query<(&Transform, &Player), Without<Base>>,
+    input: Res<ButtonInput<KeyCode>>,
+    mut game: ResMut<Game>,
+) {
+    let (b_pos, base) = base_q.get_single().unwrap();
+    let (p_pos, player) = player_q.get_single().unwrap();
+
+    if p_pos.translation.distance(b_pos.translation) <= base.radius && input.pressed(player.k_give)
+    {
+        game.catched_chickens_amount += game.inventory_chickens_amount;
+        game.inventory_chickens_amount = 0;
+    }
+}
+
 pub fn catch_chicken(
     mut commands: Commands,
     player_q: Query<&Player>,
@@ -104,7 +131,9 @@ pub fn catch_chicken(
         if game.inventory_chickens_amount >= MAX_DEFAULT_INVENTORY_SPACE {
             popup_ev.send_default();
         } else {
-            commands.entity(game.catchable_chicken.unwrap()).despawn();
+            commands
+                .entity(game.catchable_chicken.unwrap())
+                .despawn_recursive();
             game.catchable_chicken = None;
             game.inventory_chickens_amount += 1;
         }

@@ -112,7 +112,8 @@ pub fn spawn_chickens(
     if game.chicken_spawn_timer.finished() {
         let p_pos = player_q.get_single().unwrap();
 
-        commands.spawn(ChickenBundle::default_near_player(p_pos.translation));
+        let chicken_bundle = ChickenBundle::default_near_player(p_pos.translation);
+        commands.spawn(chicken_bundle);
     }
 }
 
