@@ -44,6 +44,23 @@ impl Default for BaseBundle {
     }
 }
 
+impl BaseBundle {
+    pub fn default_on_point(spawnpoint: Vec2) -> Self {
+        Self {
+            base: Default::default(),
+            sprite_bundle: SpriteBundle {
+                sprite: Sprite {
+                    color: BASE_COLOR,
+                    custom_size: Some(Vec2::new(BASE_SIZE, BASE_SIZE)),
+                    ..Default::default()
+                },
+                transform: Transform::from_translation(spawnpoint.extend(BASE_Z)),
+                ..Default::default()
+            },
+        }
+    }
+}
+
 pub fn spawn_player_base(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,

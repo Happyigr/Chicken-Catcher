@@ -1,11 +1,14 @@
 mod base;
 mod camera;
 mod chicken;
+mod map;
 mod misc;
 mod player;
 mod settings;
 mod ui;
 mod werewolf;
+
+use std::thread::spawn;
 
 use base::spawn_player_base;
 use bevy::prelude::*;
@@ -17,7 +20,7 @@ use player::{
 };
 use settings::*;
 use ui::{change_ui, cleanup_popups, popup, spawn_ui, EvSpawnPopup};
-use werewolf::spawn_werewolf;
+use werewolf::{spawn_werewolf, spawn_werewolf_with_base};
 
 fn main() {
     let mut app = App::new();
@@ -36,6 +39,7 @@ fn main() {
             spawn_ui,
             spawn_player_base,
             spawn_werewolf,
+            spawn_werewolf_with_base,
         ),
     );
 

@@ -1,7 +1,8 @@
 use bevy::{color::Color, prelude::KeyCode};
 
-/// Game section
+/// Main section
 pub const CHICKEN_SPAWN_DELTA: f32 = 3.0;
+pub const MAP_SIZE: f32 = 1000.0;
 
 /// Camera section
 pub const MAX_CAMERA_SPEED: f32 = 50.0;
