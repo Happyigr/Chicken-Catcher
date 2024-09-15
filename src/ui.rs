@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-use crate::Game;
+use crate::{Game, PlayerRes};
 
 #[derive(Event, Default)]
 pub struct EvSpawnPopup;
@@ -45,6 +45,7 @@ pub fn spawn_ui(mut commands: Commands) {
 
 pub fn change_ui(
     game: Res<Game>,
+    player_res: Res<PlayerRes>,
     mut catched_score_q: Query<
         &mut Text,
         (With<CatchedChickenScore>, Without<InventoryChickenScore>),
@@ -55,8 +56,10 @@ pub fn change_ui(
     catched_text.sections[0].value = format!("Catched chickens: {}", game.catched_chickens_amount);
 
     let mut inventory_text = inventory_chicken_q.get_single_mut().unwrap();
-    inventory_text.sections[0].value =
-        format!("Chickens in inventory: {}", game.inventory_chickens_amount);
+    inventory_text.sections[0].value = format!(
+        "Chickens in inventory: {}",
+        player_res.inventory_chickens_amount
+    );
 }
 
 pub fn popup(mut popup_event: EventReader<EvSpawnPopup>, mut commands: Commands) {

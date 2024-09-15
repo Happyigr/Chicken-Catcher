@@ -5,6 +5,7 @@ mod misc;
 mod player;
 mod settings;
 mod ui;
+mod werewolf;
 
 use base::spawn_player_base;
 use bevy::prelude::*;
@@ -16,6 +17,7 @@ use player::{
 };
 use settings::*;
 use ui::{change_ui, cleanup_popups, popup, spawn_ui, EvSpawnPopup};
+use werewolf::spawn_werewolf;
 
 fn main() {
     let mut app = App::new();
@@ -24,10 +26,17 @@ fn main() {
     app.add_plugins(DefaultPlugins);
 
     app.insert_resource(Game::default());
+    app.insert_resource(PlayerRes::default());
 
     app.add_systems(
         Startup,
-        (spawn_camera, spawn_player, spawn_ui, spawn_player_base),
+        (
+            spawn_camera,
+            spawn_player,
+            spawn_ui,
+            spawn_player_base,
+            spawn_werewolf,
+        ),
     );
 
     // chicken systems
@@ -57,18 +66,29 @@ fn main() {
 #[derive(Resource)]
 struct Game {
     chicken_spawn_timer: Timer,
-    catchable_chicken: Option<Entity>,
     catched_chickens_amount: usize,
+}
+
+#[derive(Resource)]
+struct PlayerRes {
     inventory_chickens_amount: usize,
+    catchable_chicken: Option<Entity>,
+}
+
+impl Default for PlayerRes {
+    fn default() -> Self {
+        Self {
+            inventory_chickens_amount: 0,
+            catchable_chicken: None,
+        }
+    }
 }
 
 impl Default for Game {
     fn default() -> Self {
         Self {
             chicken_spawn_timer: Timer::from_seconds(CHICKEN_SPAWN_DELTA, TimerMode::Repeating),
-            catchable_chicken: None,
             catched_chickens_amount: 0,
-            inventory_chickens_amount: 0,
         }
     }
 }

@@ -3,7 +3,7 @@ use bevy::{
     sprite::{MaterialMesh2dBundle, Mesh2dHandle},
 };
 
-use crate::{player::Player, settings::*};
+use crate::{player::ForPlayer, settings::*};
 
 #[derive(Component, Default)]
 pub struct BaseCatchingRadius;
@@ -50,7 +50,7 @@ pub fn spawn_player_base(
     mut material: ResMut<Assets<ColorMaterial>>,
 ) {
     commands
-        .spawn(BaseBundle::default())
+        .spawn((BaseBundle::default(), ForPlayer))
         .with_children(|parent| {
             parent.spawn((
                 MaterialMesh2dBundle {
@@ -59,6 +59,7 @@ pub fn spawn_player_base(
                     ..Default::default()
                 },
                 BaseCatchingRadius::default(),
+                ForPlayer,
             ));
         });
 }
