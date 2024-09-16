@@ -1,8 +1,10 @@
 # To Do
 [x] - Player catching the chickens
-[ ] - The base, where chickens need to be dropped
-[ ] - updates of the player (the player capacity, catch speed ....)
-[ ] - angry chickens (with low chance, the chicken will attack the player)
+[x] - The base, where chickens need to be dropped
 [ ] - angry werewolf, which are hiding behind the trees and trying to kill the player sometimes
+[ ] - minimap of the map
+[ ] - scrolling mouse to see more of the map (zooming)
+[ ] - angry chickens (with low chance, the chicken will attack the player)
+[ ] - updates of the player (the player capacity, catch speed ....)
 [ ] - smarter behaviour of chickens
 [ ] - textures

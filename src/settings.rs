@@ -30,6 +30,7 @@ pub const WEREWOLF_SPEED: f32 = 100.0;
 pub const WEREWOLF_SIZE: f32 = 50.0;
 pub const WEREWOLF_Z: f32 = 5.0;
 pub const WEREWOLF_DISTANCE_TO_CENTER: f32 = 200.0;
+pub const WEREWOLF_BEHAVIOUR_CHANGE_DELTA: f32 = 2.0;
 
 /// base section
 pub const BASE_RADIUS: f32 = 100.0;
@@ -42,7 +43,7 @@ pub const BASE_CATCHING_RADIUS_COLOR: Color = Color::linear_rgb(0.0, 0.0, 0.5);
 pub const CHICKEN_CALM_SPEED: f32 = 30.0;
 pub const CHICKEN_MAD_SPEED: f32 = 75.0;
 pub const CHICKEN_SIZE: f32 = 30.0;
-pub const BEHAVIOUR_CHANGE_DELTA: f32 = 5.0;
+pub const CHICKEN_BEHAVIOUR_CHANGE_DELTA: f32 = 5.0;
 pub const CHICKEN_COLOR: Color = Color::linear_rgb(0.0, 0.0, 0.5);
 // spawn distances
 pub const MIN_CHICKEN_DISTANCE_TO_PLAYER: f32 = PLAYER_SIZE + 10.0;

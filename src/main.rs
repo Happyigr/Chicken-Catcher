@@ -8,8 +8,6 @@ mod settings;
 mod ui;
 mod werewolf;
 
-use std::thread::spawn;
-
 use base::spawn_player_base;
 use bevy::prelude::*;
 use camera::{move_camera, spawn_camera};
@@ -20,7 +18,7 @@ use player::{
 };
 use settings::*;
 use ui::{change_ui, cleanup_popups, popup, spawn_ui, EvSpawnPopup};
-use werewolf::{spawn_werewolf, spawn_werewolf_with_base};
+use werewolf::{spawn_werewolf, spawn_werewolf_with_base, werewolf_behave};
 
 fn main() {
     let mut app = App::new();
@@ -59,6 +57,8 @@ fn main() {
     // ui systems
     app.add_systems(Update, (popup, cleanup_popups));
     app.add_systems(Update, (change_ui).run_if(resource_changed::<Game>));
+    // werewolf systems
+    app.add_systems(Update, werewolf_behave);
 
     // chicken observers
     app.observe(on_add_catchable);

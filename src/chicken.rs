@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use rand::Rng;
 
 #[derive(Default)]
-enum Behaviour {
+enum ChickenBehaviour {
     Calm,
     Mad,
     #[default]
@@ -13,23 +13,23 @@ enum Behaviour {
 #[derive(Component)]
 pub struct Chicken {
     behaviour_change_timer: Timer,
-    behaviour: Behaviour,
+    behaviour: ChickenBehaviour,
     move_dir: Option<Vec2>,
 }
 
 impl Chicken {
-    fn change_behaviour_to(&mut self, next_beh: Behaviour) {
+    fn change_behaviour_to(&mut self, next_beh: ChickenBehaviour) {
         match next_beh {
-            Behaviour::Calm => {
-                self.behaviour = Behaviour::Calm;
+            ChickenBehaviour::Calm => {
+                self.behaviour = ChickenBehaviour::Calm;
                 self.move_dir = Some(get_random_dir());
             }
-            Behaviour::Mad => {
-                self.behaviour = Behaviour::Mad;
+            ChickenBehaviour::Mad => {
+                self.behaviour = ChickenBehaviour::Mad;
                 self.move_dir = Some(get_random_dir());
             }
-            Behaviour::Idle => {
-                self.behaviour = Behaviour::Idle;
+            ChickenBehaviour::Idle => {
+                self.behaviour = ChickenBehaviour::Idle;
                 self.move_dir = None;
             }
         }
@@ -40,10 +40,10 @@ impl Default for Chicken {
     fn default() -> Self {
         Self {
             behaviour_change_timer: Timer::from_seconds(
-                BEHAVIOUR_CHANGE_DELTA,
+                CHICKEN_BEHAVIOUR_CHANGE_DELTA,
                 TimerMode::Repeating,
             ),
-            behaviour: Behaviour::default(),
+            behaviour: ChickenBehaviour::default(),
             move_dir: None,
         }
     }
@@ -72,31 +72,30 @@ impl ChickenBundle {
     }
 }
 
-// todo! sometimes chickens stays, osmewhere will be the behaviour deleted after it added. to fix
 pub fn behave_chickens(mut chickens_q: Query<(&mut Chicken, &mut Transform)>, time: Res<Time>) {
     for (mut chicken, mut ch_pos) in chickens_q.iter_mut() {
         chicken.behaviour_change_timer.tick(time.delta());
 
         if chicken.behaviour_change_timer.finished() {
             if rand::thread_rng().gen_ratio(5, 10) {
-                chicken.change_behaviour_to(Behaviour::Mad);
+                chicken.change_behaviour_to(ChickenBehaviour::Mad);
             } else if rand::thread_rng().gen_ratio(5, 10) {
-                chicken.change_behaviour_to(Behaviour::Calm);
+                chicken.change_behaviour_to(ChickenBehaviour::Calm);
             } else {
-                chicken.change_behaviour_to(Behaviour::Idle);
+                chicken.change_behaviour_to(ChickenBehaviour::Idle);
             }
         }
 
         match chicken.behaviour {
-            Behaviour::Calm => {
+            ChickenBehaviour::Calm => {
                 ch_pos.translation +=
                     chicken.move_dir.unwrap().extend(0.) * CHICKEN_CALM_SPEED * time.delta_seconds()
             }
-            Behaviour::Mad => {
+            ChickenBehaviour::Mad => {
                 ch_pos.translation +=
                     chicken.move_dir.unwrap().extend(0.) * CHICKEN_MAD_SPEED * time.delta_seconds()
             }
-            Behaviour::Idle => {} // do nothing, this is real idle :)
+            ChickenBehaviour::Idle => {} // do nothing, this is real idle :)
         }
     }
 }

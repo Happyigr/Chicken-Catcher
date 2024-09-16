@@ -1,4 +1,4 @@
-use bevy::prelude::Vec2;
+use bevy::{math::NormedVectorSpace, prelude::Vec2};
 use rand::Rng;
 
 pub fn get_random_dir() -> Vec2 {
@@ -11,4 +11,8 @@ pub fn get_random_dir() -> Vec2 {
     }
 
     dir
+}
+
+pub fn get_normilized_dir(a: Vec2, b: Vec2) -> Vec2 {
+    (b - a) / b.distance(a)
 }
