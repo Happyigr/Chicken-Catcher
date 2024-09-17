@@ -18,7 +18,7 @@ use player::{
 };
 use settings::*;
 use ui::{change_ui, cleanup_popups, popup, spawn_ui, EvSpawnPopup};
-use werewolf::{spawn_werewolf, spawn_werewolf_with_base, werewolf_behave};
+use werewolf::{spawn_werewolf_with_base, werewolf_behave};
 
 fn main() {
     let mut app = App::new();
@@ -36,7 +36,6 @@ fn main() {
             spawn_player,
             spawn_ui,
             spawn_player_base,
-            spawn_werewolf,
             spawn_werewolf_with_base,
         ),
     );

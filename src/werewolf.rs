@@ -1,12 +1,11 @@
 use bevy::{
-    math::NormedVectorSpace,
     prelude::*,
     sprite::{MaterialMesh2dBundle, Mesh2dHandle},
 };
 use rand::Rng;
 
 use crate::{
-    base::{self, BaseBundle, BaseCatchingRadius},
+    base::{BaseBundle, BaseCatchingRadius},
     misc::{get_normilized_dir, get_random_dir},
     settings::*,
 };
@@ -22,18 +21,14 @@ enum WerewolfBehaviour {
 #[derive(Component)]
 pub struct Werewolf {
     base: Option<Entity>,
+    base_pos: Option<Vec2>,
     behaviour: WerewolfBehaviour,
     move_dir: Option<Vec2>,
     behaviour_change_timer: Timer,
 }
 
 impl Werewolf {
-    fn change_behaviour_to(
-        &mut self,
-        next_beh: WerewolfBehaviour,
-        base_pos: Option<Vec2>,
-        werewolf_pos: Option<Vec2>,
-    ) {
+    fn change_behaviour_to(&mut self, next_beh: WerewolfBehaviour, werewolf_pos: Option<Vec2>) {
         match next_beh {
             WerewolfBehaviour::Idle => {
                 self.behaviour = WerewolfBehaviour::Idle;
@@ -50,7 +45,10 @@ impl Werewolf {
             }
             WerewolfBehaviour::MoveToBase => {
                 self.behaviour = WerewolfBehaviour::MoveToBase;
-                self.move_dir = Some(get_normilized_dir(werewolf_pos.unwrap(), base_pos.unwrap()));
+                self.move_dir = Some(get_normilized_dir(
+                    werewolf_pos.unwrap(),
+                    self.base_pos.unwrap(),
+                ));
             }
         }
     }
@@ -72,6 +70,7 @@ impl Default for WerewolfBundle {
                 base: None,
                 behaviour: WerewolfBehaviour::Idle,
                 move_dir: None,
+                base_pos: None,
                 behaviour_change_timer: Timer::from_seconds(
                     WEREWOLF_BEHAVIOUR_CHANGE_DELTA,
                     TimerMode::Repeating,
@@ -95,6 +94,7 @@ impl WerewolfBundle {
         Self {
             werewolf: Werewolf {
                 base: Some(base),
+                base_pos: Some(spawnpoint),
                 behaviour: WerewolfBehaviour::Idle,
                 move_dir: None,
                 behaviour_change_timer: Timer::from_seconds(
@@ -115,21 +115,28 @@ impl WerewolfBundle {
     }
 }
 
+// todo somehow get the werewolf pos from werewolf method
 pub fn werewolf_behave(mut werewolf_q: Query<(&mut Transform, &mut Werewolf)>, time: Res<Time>) {
     for (mut w_pos, mut werewolf) in werewolf_q.iter_mut() {
         werewolf.behaviour_change_timer.tick(time.delta());
 
         if werewolf.behaviour_change_timer.finished() {
             if rand::thread_rng().gen_ratio(5, 10) {
-                werewolf.change_behaviour_to(WerewolfBehaviour::Move, None, None);
+                werewolf.change_behaviour_to(WerewolfBehaviour::Move, None);
             } else if rand::thread_rng().gen_ratio(5, 10) {
-                werewolf.change_behaviour_to(WerewolfBehaviour::Idle, None, None);
+                werewolf.change_behaviour_to(WerewolfBehaviour::Idle, None);
             } else {
-                werewolf.change_behaviour_to(WerewolfBehaviour::Catch, None, None);
-                println!("Moving to base");
-                // werewolf.change_behaviour_to(WerewolfBehaviour::MoveToBase, None, None);
+                // go to base as enough chickens were catched
+                if werewolf.base.is_some() {
+                    println!("Moving to base");
+                    werewolf.change_behaviour_to(
+                        WerewolfBehaviour::MoveToBase,
+                        Some(w_pos.translation.xy()),
+                    );
+                } else {
+                    werewolf.change_behaviour_to(WerewolfBehaviour::Move, None);
+                }
             }
-            // go to base as enough chickens were catched
         }
 
         match werewolf.behaviour {
@@ -138,17 +145,13 @@ pub fn werewolf_behave(mut werewolf_q: Query<(&mut Transform, &mut Werewolf)>, t
                     werewolf.move_dir.unwrap().extend(0.) * WEREWOLF_SPEED * time.delta_seconds()
             }
             WerewolfBehaviour::MoveToBase => {
-                // w_pos.translation +=
-                //     werewolf.move_dir.unwrap().extend(0.) * WEREWOLF_SPEED * time.delta_seconds()
+                w_pos.translation +=
+                    werewolf.move_dir.unwrap().extend(0.) * WEREWOLF_SPEED * time.delta_seconds()
             }
             WerewolfBehaviour::Catch => {} // todo!
             WerewolfBehaviour::Idle => {}  // do nothing, this is real idle :)
         }
     }
-}
-
-pub fn spawn_werewolf(mut commands: Commands) {
-    commands.spawn(WerewolfBundle::default());
 }
 
 pub fn spawn_werewolf_with_base(
