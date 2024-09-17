@@ -58,7 +58,7 @@ impl Default for PlayerBundle {
 }
 
 #[derive(Component)]
-pub struct Catchable;
+pub struct ForPlayerCatchable;
 
 pub fn player_chicken_collision(
     mut commands: Commands,
@@ -80,15 +80,19 @@ pub fn player_chicken_collision(
                 < p_pos.translation.distance(catchable_ch_pos.translation)
             {
                 // change the catchable chicken to it
-                commands.entity(catchable_ch_ent).remove::<Catchable>();
-                commands.entity(ch_ent).insert(Catchable);
+                commands
+                    .entity(catchable_ch_ent)
+                    .remove::<ForPlayerCatchable>();
+                commands.entity(ch_ent).insert(ForPlayerCatchable);
                 player_res.catchable_chicken = Some(ch_ent);
             // and this chicken ran away too far
             } else if p_pos.translation.distance(catchable_ch_pos.translation)
                 >= PLAYER_CATCHING_RADIUS
             {
                 // make this chicken not catchable
-                commands.entity(catchable_ch_ent).remove::<Catchable>();
+                commands
+                    .entity(catchable_ch_ent)
+                    .remove::<ForPlayerCatchable>();
                 player_res.catchable_chicken = None;
             }
         }
@@ -98,7 +102,7 @@ pub fn player_chicken_collision(
             if p_pos.translation.distance(ch_pos.translation) < PLAYER_CATCHING_RADIUS {
                 // and make it cathable
                 player_res.catchable_chicken = Some(ch_ent);
-                commands.entity(ch_ent).insert(Catchable);
+                commands.entity(ch_ent).insert(ForPlayerCatchable);
                 break;
             }
         }
@@ -110,23 +114,21 @@ pub fn control_player() {}
 
 // rewrite as event
 pub fn try_give_chickens_to_base(
-    base_q: Query<(&Transform, &Base), (Without<Player>, With<ForPlayer>)>,
+    mut base_q: Query<(&Transform, &mut Base), (Without<Player>, With<ForPlayer>)>,
     player_q: Query<(&Transform, &Player), Without<Base>>,
     input: Res<ButtonInput<KeyCode>>,
     mut player_res: ResMut<PlayerRes>,
-    mut game: ResMut<Game>,
 ) {
-    let (b_pos, base) = base_q.get_single().unwrap();
+    let (b_pos, mut base) = base_q.get_single_mut().unwrap();
     let (p_pos, player) = player_q.get_single().unwrap();
 
     if p_pos.translation.distance(b_pos.translation) <= base.radius && input.pressed(player.k_give)
     {
-        game.catched_chickens_amount += player_res.inventory_chickens_amount;
+        base.chickens_amount += player_res.inventory_chickens_amount;
         player_res.inventory_chickens_amount = 0;
     }
 }
 
-// rewrite as event
 pub fn catch_chicken(
     mut commands: Commands,
     player_q: Query<&Player>,
@@ -150,7 +152,7 @@ pub fn catch_chicken(
 }
 
 pub fn on_add_catchable(
-    trigger: Trigger<OnAdd, Catchable>,
+    trigger: Trigger<OnAdd, ForPlayerCatchable>,
     mut chickens_q: Query<&mut Sprite, With<Chicken>>,
 ) {
     let mut ch_sprite = chickens_q.get_mut(trigger.entity()).unwrap();
@@ -158,7 +160,7 @@ pub fn on_add_catchable(
 }
 
 pub fn on_remove_catchable(
-    trigger: Trigger<OnRemove, Catchable>,
+    trigger: Trigger<OnRemove, ForPlayerCatchable>,
     mut chickens_q: Query<&mut Sprite, With<Chicken>>,
 ) {
     let mut ch_sprite = chickens_q.get_mut(trigger.entity()).unwrap();

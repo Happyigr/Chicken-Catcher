@@ -11,12 +11,14 @@ pub struct BaseCatchingRadius;
 #[derive(Component)]
 pub struct Base {
     pub radius: f32,
+    pub chickens_amount: usize,
 }
 
 impl Default for Base {
     fn default() -> Self {
         Self {
             radius: BASE_CATCHING_RADIUS,
+            chickens_amount: 0,
         }
     }
 }

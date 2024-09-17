@@ -69,7 +69,6 @@ fn main() {
 #[derive(Resource)]
 struct Game {
     chicken_spawn_timer: Timer,
-    catched_chickens_amount: usize,
 }
 
 #[derive(Resource)]
@@ -91,7 +90,6 @@ impl Default for Game {
     fn default() -> Self {
         Self {
             chicken_spawn_timer: Timer::from_seconds(CHICKEN_SPAWN_DELTA, TimerMode::Repeating),
-            catched_chickens_amount: 0,
         }
     }
 }

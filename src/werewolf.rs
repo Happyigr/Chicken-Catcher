@@ -28,6 +28,7 @@ pub struct Werewolf {
     move_dir: Option<Vec2>,
     behaviour_change_timer: Timer,
     must_change_beh: bool,
+    chickens_in_inventory: usize,
 }
 
 impl Werewolf {
@@ -72,6 +73,7 @@ impl WerewolfBundle {
                 behaviour: WerewolfBehaviour::Idle,
                 move_dir: None,
                 must_change_beh: false,
+                chickens_in_inventory: 0,
                 behaviour_change_timer: Timer::from_seconds(
                     WEREWOLF_BEHAVIOUR_CHANGE_DELTA,
                     TimerMode::Repeating,
@@ -93,7 +95,6 @@ impl WerewolfBundle {
 // todo somehow get the werewolf pos from werewolf method
 pub fn werewolf_behave(mut werewolf_q: Query<(&mut Transform, &mut Werewolf)>, time: Res<Time>) {
     for (mut w_pos, mut werewolf) in werewolf_q.iter_mut() {
-        println!("{:?}, {:?}", werewolf.behaviour, w_pos.translation.xy());
         match werewolf.behaviour {
             WerewolfBehaviour::Idle | WerewolfBehaviour::Move => {
                 if werewolf
