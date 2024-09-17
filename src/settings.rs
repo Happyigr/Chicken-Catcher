@@ -33,7 +33,7 @@ pub const WEREWOLF_DISTANCE_TO_CENTER: f32 = 200.0;
 pub const WEREWOLF_BEHAVIOUR_CHANGE_DELTA: f32 = 2.0;
 
 /// base section
-pub const BASE_RADIUS: f32 = 100.0;
+pub const BASE_CATCHING_RADIUS: f32 = 100.0;
 pub const BASE_SIZE: f32 = 50.0;
 pub const BASE_COLOR: Color = Color::linear_rgb(0.0, 0.0, 0.5);
 pub const BASE_Z: f32 = 1.0;

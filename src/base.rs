@@ -16,7 +16,7 @@ pub struct Base {
 impl Default for Base {
     fn default() -> Self {
         Self {
-            radius: BASE_RADIUS,
+            radius: BASE_CATCHING_RADIUS,
         }
     }
 }
@@ -71,7 +71,10 @@ pub fn spawn_player_base(
         .with_children(|parent| {
             parent.spawn((
                 MaterialMesh2dBundle {
-                    mesh: Mesh2dHandle(meshes.add(Annulus::new(BASE_RADIUS - 1., BASE_RADIUS))),
+                    mesh: Mesh2dHandle(meshes.add(Annulus::new(
+                        BASE_CATCHING_RADIUS - 1.,
+                        BASE_CATCHING_RADIUS,
+                    ))),
                     material: material.add(BASE_CATCHING_RADIUS_COLOR),
                     ..Default::default()
                 },
