@@ -5,7 +5,7 @@ use bevy::{
 use rand::Rng;
 
 use crate::{
-    base::{BaseBundle, BaseCatchingRadius},
+    base::{BaseBundle, BaseCatchingRadius, BaseText, BelongToBase},
     misc::{get_normilized_dir, get_random_dir},
     settings::*,
 };
@@ -155,7 +155,7 @@ pub fn spawn_werewolf_with_base(
 ) {
     let spawnpoint = get_random_dir() * WEREWOLF_DISTANCE_TO_CENTER;
 
-    let base_id = commands
+    let base_ent = commands
         .spawn((BaseBundle::default_on_point(spawnpoint), ForWerewolf))
         .with_children(|parent| {
             parent.spawn((
@@ -172,6 +172,19 @@ pub fn spawn_werewolf_with_base(
         })
         .id();
     commands.spawn(WerewolfBundle::default_on_point_with_base(
-        spawnpoint, base_id,
+        spawnpoint, base_ent,
     ));
+
+    let text_ent = commands
+        .spawn(BaseText {
+            base: BelongToBase { base: base_ent },
+            text_bundle: Text2dBundle {
+                transform: Transform::from_translation(Vec3::new(0., 0., TEXT_Z)),
+                text: Text::from_section("0", TextStyle::default()),
+                ..Default::default()
+            },
+        })
+        .id();
+
+    commands.entity(base_ent).push_children(&[text_ent]);
 }

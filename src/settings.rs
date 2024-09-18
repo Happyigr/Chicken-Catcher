@@ -3,6 +3,7 @@ use bevy::{color::Color, prelude::KeyCode};
 /// Main section
 pub const CHICKEN_SPAWN_DELTA: f32 = 3.0;
 pub const MAP_SIZE: f32 = 1000.0;
+pub const TEXT_Z: f32 = 10.;
 
 /// Camera section
 pub const MAX_CAMERA_SPEED: f32 = 50.0;
