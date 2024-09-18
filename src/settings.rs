@@ -49,3 +49,11 @@ pub const CHICKEN_COLOR: Color = Color::linear_rgb(0.0, 0.0, 0.5);
 pub const MIN_CHICKEN_DISTANCE_TO_PLAYER: f32 = PLAYER_SIZE + 10.0;
 pub const MAX_CHICKEN_DISTANCE_TO_PLAYER: f32 = PLAYER_SIZE + 200.0;
 pub const CHICKEN_Z: f32 = 3.0;
+
+/// Corral section
+pub const DEFAULT_CORRAL_LENGTH: usize = 4;
+pub const DEFAULT_CORRAL_HEIGTH: usize = 4;
+pub const CORRAL_MARGIN_TO_MAP: f32 = 100.0;
+pub const CORRAL_Z: f32 = 2.0;
+pub const CORRAL_WALL_SIZE: f32 = 50.0;
+pub const CORRAL_WALL_COLOR: Color = Color::linear_rgba(0.1, 0.1, 0.1, 0.1);

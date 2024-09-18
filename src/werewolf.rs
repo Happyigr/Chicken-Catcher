@@ -1,5 +1,4 @@
 use bevy::{
-    math::NormedVectorSpace,
     prelude::*,
     sprite::{MaterialMesh2dBundle, Mesh2dHandle},
 };
@@ -16,10 +15,13 @@ enum WerewolfBehaviour {
     Idle,
     Move,
     MoveToBase,
+    // todo! for this make the chickens, which are spawning in some area, and the werewolf are
+    // going in there and waiting for chicken to catch
+    FindChicken,
     Catch,
 }
 
-// the base of the werewolfwil lbe stored in this component as entity
+// the base of the werewolf will be stored in this component as entity
 #[derive(Component)]
 pub struct Werewolf {
     base: Entity,
@@ -51,6 +53,7 @@ impl Werewolf {
                 self.behaviour = WerewolfBehaviour::MoveToBase;
                 self.move_dir = Some(get_normilized_dir(werewolf_pos.unwrap(), self.base_pos));
             }
+            WerewolfBehaviour::FindChicken => todo!(),
         }
     }
 }
@@ -110,6 +113,7 @@ pub fn werewolf_behave(mut werewolf_q: Query<(&mut Transform, &mut Werewolf)>, t
                     werewolf.must_change_beh = true;
                 }
             }
+            WerewolfBehaviour::FindChicken => todo!(),
             WerewolfBehaviour::Catch => {}
         }
 
@@ -139,6 +143,7 @@ pub fn werewolf_behave(mut werewolf_q: Query<(&mut Transform, &mut Werewolf)>, t
             }
             WerewolfBehaviour::Catch => {} // todo!
             WerewolfBehaviour::Idle => {}  // do nothing, this is real idle :)
+            WerewolfBehaviour::FindChicken => {}
         }
     }
 }

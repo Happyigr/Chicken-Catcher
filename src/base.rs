@@ -27,6 +27,7 @@ impl Default for Base {
 pub struct BaseBundle {
     pub base: Base,
     pub sprite_bundle: SpriteBundle,
+    pub text: Text,
 }
 
 impl Default for BaseBundle {
@@ -42,6 +43,7 @@ impl Default for BaseBundle {
                 transform: Transform::from_translation(Vec3::new(0., 0., BASE_Z)),
                 ..Default::default()
             },
+            text: Text::from_section("0", TextStyle::default()),
         }
     }
 }
@@ -59,6 +61,7 @@ impl BaseBundle {
                 transform: Transform::from_translation(spawnpoint.extend(BASE_Z)),
                 ..Default::default()
             },
+            text: Text::from_section("0", TextStyle::default()),
         }
     }
 }
@@ -84,4 +87,10 @@ pub fn spawn_player_base(
                 ForPlayer,
             ));
         });
+}
+
+pub fn change_base_text(mut base_q: Query<(&Base, &mut Text)>) {
+    for (base, mut text) in base_q.iter_mut() {
+        text.sections[0].value = format!("{}", base.chickens_amount);
+    }
 }

@@ -1,6 +1,7 @@
 mod base;
 mod camera;
 mod chicken;
+mod chicken_corral;
 mod map;
 mod misc;
 mod player;
@@ -8,10 +9,11 @@ mod settings;
 mod ui;
 mod werewolf;
 
-use base::spawn_player_base;
+use base::{change_base_text, spawn_player_base};
 use bevy::prelude::*;
 use camera::{move_camera, spawn_camera};
 use chicken::{behave_chickens, spawn_chickens};
+use chicken_corral::{spawn_corral, spawn_corral_walls};
 use player::{
     catch_chicken, move_player, on_add_catchable, on_remove_catchable, player_chicken_collision,
     spawn_player, try_give_chickens_to_base,
@@ -37,8 +39,10 @@ fn main() {
             spawn_ui,
             spawn_player_base,
             spawn_werewolf_with_base,
+            spawn_corral,
         ),
     );
+    app.add_systems(PostStartup, spawn_corral_walls);
 
     // chicken systems
     app.add_systems(Update, (spawn_chickens, behave_chickens));
@@ -56,6 +60,8 @@ fn main() {
     // ui systems
     app.add_systems(Update, (popup, cleanup_popups));
     app.add_systems(Update, (change_ui).run_if(resource_changed::<Game>));
+    // base systems
+    app.add_systems(Update, change_base_text);
     // werewolf systems
     app.add_systems(Update, werewolf_behave);
 
