@@ -136,6 +136,12 @@ pub fn behave_chickens(mut chickens_q: Query<(&mut Chicken, &mut Transform)>, ti
     }
 }
 
+pub fn chicken_check_collision(
+    mut chickens_q: Query<(&Transform, &mut Chicken)>,
+    corrals_q: Query<(&Transform, &ChickenCorral), Without<Chicken>>,
+) {
+}
+
 // pub fn spawn_chickens_near_player(
 //     mut commands: Commands,
 //     mut game: ResMut<Game>,
