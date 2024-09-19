@@ -1,4 +1,6 @@
-use crate::{misc::get_random_dir, player::Player, settings::*, Game};
+use crate::{
+    chicken_corral::ChickenCorral, misc::get_random_dir, player::Player, settings::*, Game,
+};
 use bevy::prelude::*;
 use rand::Rng;
 
@@ -56,10 +58,23 @@ pub struct ChickenBundle {
 }
 
 impl ChickenBundle {
-    pub fn default_near_player(p_pos: Vec3) -> Self {
+    pub fn default_in_corral(c_pos: Vec3, corral: &ChickenCorral) -> Self {
+        // for now we pickeng just the minimum of th eboth sides of the corral
+        let min_walls_size = corral.length.min(corral.heigth) as f32;
+        // the c_pos is the left upper corner of the corral
+        let c_pos = c_pos + Vec3::new(CORRAL_WALL_SIZE, -CORRAL_WALL_SIZE, 0.);
+        let delta_spawn =
+            rand::thread_rng().gen_range(0.0..min_walls_size * CORRAL_WALL_SIZE - CORRAL_WALL_SIZE);
+        let spawn_dir = Vec2::new(
+            rand::thread_rng().gen_range(0.0..1.0),
+            rand::thread_rng().gen_range(-1.0..0.0),
+        );
+
         Self {
             sprite_bundle: SpriteBundle {
-                transform: Transform::from_translation(p_pos + generate_chicken_spawnpoint()),
+                transform: Transform::from_translation(
+                    c_pos + (spawn_dir * delta_spawn).extend(CHICKEN_Z),
+                ),
                 sprite: Sprite {
                     color: CHICKEN_COLOR,
                     custom_size: Some(Vec2::new(CHICKEN_SIZE, CHICKEN_SIZE)),
@@ -70,6 +85,27 @@ impl ChickenBundle {
             chicken: Chicken::default(),
         }
     }
+
+    // pub fn default_near_player(p_pos: Vec3) -> Self {
+    //     // generates the chicken spawnpoint, that are not near the player, and not to far from it
+    //     let distance_to_player = rand::thread_rng()
+    //         .gen_range(MIN_CHICKEN_DISTANCE_TO_PLAYER..MAX_CHICKEN_DISTANCE_TO_PLAYER);
+    //
+    //     Self {
+    //         sprite_bundle: SpriteBundle {
+    //             transform: Transform::from_translation(
+    //                 p_pos + (get_random_dir() * distance_to_player).extend(CHICKEN_Z),
+    //             ),
+    //             sprite: Sprite {
+    //                 color: CHICKEN_COLOR,
+    //                 custom_size: Some(Vec2::new(CHICKEN_SIZE, CHICKEN_SIZE)),
+    //                 ..Default::default()
+    //             },
+    //             ..Default::default()
+    //         },
+    //         chicken: Chicken::default(),
+    //     }
+    // }
 }
 
 pub fn behave_chickens(mut chickens_q: Query<(&mut Chicken, &mut Transform)>, time: Res<Time>) {
@@ -100,26 +136,47 @@ pub fn behave_chickens(mut chickens_q: Query<(&mut Chicken, &mut Transform)>, ti
     }
 }
 
-pub fn spawn_chickens(
+// pub fn spawn_chickens_near_player(
+//     mut commands: Commands,
+//     mut game: ResMut<Game>,
+//     time: Res<Time>,
+//     player_q: Query<&Transform, With<Player>>,
+// ) {
+//     game.chicken_spawn_timer.tick(time.delta());
+//
+//     if game.chicken_spawn_timer.finished() {
+//         let p_pos = player_q.get_single().unwrap();
+//
+//         let chicken_bundle = ChickenBundle::default_near_player(p_pos.translation);
+//         commands.spawn(chicken_bundle);
+//     }
+// }
+
+pub fn spawn_chicken_in_corral(
     mut commands: Commands,
     mut game: ResMut<Game>,
     time: Res<Time>,
-    player_q: Query<&Transform, With<Player>>,
+    corral_q: Query<(&Transform, &ChickenCorral)>,
 ) {
     game.chicken_spawn_timer.tick(time.delta());
 
     if game.chicken_spawn_timer.finished() {
-        let p_pos = player_q.get_single().unwrap();
+        let mut spawned = false;
 
-        let chicken_bundle = ChickenBundle::default_near_player(p_pos.translation);
-        commands.spawn(chicken_bundle);
+        corral_q.iter().for_each(|(c_pos, corral)| {
+            if rand::thread_rng().gen_ratio(1, 3) {
+                commands.spawn(ChickenBundle::default_in_corral(c_pos.translation, corral));
+                spawned = true;
+                return;
+            }
+        });
+
+        if !spawned {
+            // if corral wasnt choose, then just spawn in the first one
+            corral_q.iter().for_each(|(c_pos, corral)| {
+                commands.spawn(ChickenBundle::default_in_corral(c_pos.translation, corral));
+                return;
+            })
+        }
     }
-}
-
-// generates the chicken spawnpoint, that are not near the player, and not to far from it
-fn generate_chicken_spawnpoint() -> Vec3 {
-    let distance_to_player = rand::thread_rng()
-        .gen_range(MIN_CHICKEN_DISTANCE_TO_PLAYER..MAX_CHICKEN_DISTANCE_TO_PLAYER);
-
-    (get_random_dir() * distance_to_player).extend(CHICKEN_Z)
 }

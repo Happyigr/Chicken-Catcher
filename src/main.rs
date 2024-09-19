@@ -12,7 +12,7 @@ mod werewolf;
 use base::{change_base_text, spawn_player_base};
 use bevy::prelude::*;
 use camera::{move_camera, spawn_camera};
-use chicken::{behave_chickens, spawn_chickens};
+use chicken::{behave_chickens, spawn_chicken_in_corral};
 use chicken_corral::{spawn_corral, spawn_corral_walls};
 use player::{
     catch_chicken, move_player, on_add_catchable, on_remove_catchable, player_chicken_collision,
@@ -45,7 +45,8 @@ fn main() {
     app.add_systems(PostStartup, spawn_corral_walls);
 
     // chicken systems
-    app.add_systems(Update, (spawn_chickens, behave_chickens));
+    app.add_systems(Update, (behave_chickens, spawn_chicken_in_corral));
+    // app.add_systems(Update, (behave_chickens, spawn_chickens_near_player));
     // player systems
     app.add_systems(Update, (move_player, move_camera));
     app.add_systems(
