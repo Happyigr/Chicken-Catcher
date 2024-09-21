@@ -80,7 +80,6 @@ pub fn spawn_corral_walls(mut commands: Commands, corral_q: Query<(&Transform, &
                         ..Default::default()
                     },
                     ChickenCorralWall { wall_type },
-                    Text::from_section(format!("{}", wall_type), TextStyle::default()),
                 ));
 
                 // moving the center of the next wall

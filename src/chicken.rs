@@ -1,7 +1,11 @@
 use crate::{
-    chicken_corral::ChickenCorral, misc::get_random_dir, player::Player, settings::*, Game,
+    chicken_corral::{ChickenCorral, ChickenCorralWall},
+    misc::get_random_dir,
+    player::Player,
+    settings::*,
+    Game,
 };
-use bevy::prelude::*;
+use bevy::{math::NormedVectorSpace, prelude::*};
 use rand::Rng;
 
 #[derive(Default)]
@@ -136,10 +140,21 @@ pub fn behave_chickens(mut chickens_q: Query<(&mut Chicken, &mut Transform)>, ti
     }
 }
 
-pub fn chicken_check_collision(
+pub fn chicken_corral_collision(
     mut chickens_q: Query<(&Transform, &mut Chicken)>,
-    corrals_q: Query<(&Transform, &ChickenCorral), Without<Chicken>>,
+    corrals_q: Query<&Transform, (With<ChickenCorralWall>, Without<Chicken>)>,
 ) {
+    for (ch_pos, mut ch_settings) in chickens_q.iter_mut() {
+        for co_pos in corrals_q.iter() {
+            if ch_settings.move_dir.is_some()
+                && ch_pos.translation.xy().distance(co_pos.translation.xy())
+                    <= (CORRAL_WALL_SIZE + CHICKEN_SIZE) / 2.
+            {
+                println!("Coliision with wall and chicken");
+                ch_settings.move_dir = Some(ch_settings.move_dir.unwrap() * -1.);
+            }
+        }
+    }
 }
 
 // pub fn spawn_chickens_near_player(
