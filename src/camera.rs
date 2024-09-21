@@ -29,3 +29,19 @@ pub fn move_camera(
         c_pos.translation += (move_dir.normalize() * speed * time.delta_seconds()).extend(0.);
     }
 }
+
+pub fn zoom_camera(
+    mut camera_q: Query<&mut OrthographicProjection, With<MainCamera>>,
+    input: Res<ButtonInput<KeyCode>>,
+    time: Res<Time>,
+) {
+    let mut projection = camera_q.get_single_mut().unwrap();
+
+    if input.pressed(ZOOM_OUT_KEY) {
+        projection.scale -= ZOOM_SPEED * time.delta_seconds();
+    }
+
+    if input.pressed(ZOOM_IN_KEY) {
+        projection.scale += ZOOM_SPEED * time.delta_seconds();
+    }
+}

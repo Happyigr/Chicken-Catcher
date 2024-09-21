@@ -1,11 +1,10 @@
 use crate::{
     chicken_corral::{ChickenCorral, ChickenCorralWall},
     misc::get_random_dir,
-    player::Player,
     settings::*,
     Game,
 };
-use bevy::{math::NormedVectorSpace, prelude::*};
+use bevy::prelude::*;
 use rand::Rng;
 
 #[derive(Default)]
@@ -89,27 +88,6 @@ impl ChickenBundle {
             chicken: Chicken::default(),
         }
     }
-
-    // pub fn default_near_player(p_pos: Vec3) -> Self {
-    //     // generates the chicken spawnpoint, that are not near the player, and not to far from it
-    //     let distance_to_player = rand::thread_rng()
-    //         .gen_range(MIN_CHICKEN_DISTANCE_TO_PLAYER..MAX_CHICKEN_DISTANCE_TO_PLAYER);
-    //
-    //     Self {
-    //         sprite_bundle: SpriteBundle {
-    //             transform: Transform::from_translation(
-    //                 p_pos + (get_random_dir() * distance_to_player).extend(CHICKEN_Z),
-    //             ),
-    //             sprite: Sprite {
-    //                 color: CHICKEN_COLOR,
-    //                 custom_size: Some(Vec2::new(CHICKEN_SIZE, CHICKEN_SIZE)),
-    //                 ..Default::default()
-    //             },
-    //             ..Default::default()
-    //         },
-    //         chicken: Chicken::default(),
-    //     }
-    // }
 }
 
 pub fn behave_chickens(mut chickens_q: Query<(&mut Chicken, &mut Transform)>, time: Res<Time>) {
@@ -150,28 +128,11 @@ pub fn chicken_corral_collision(
                 && ch_pos.translation.xy().distance(co_pos.translation.xy())
                     <= (CORRAL_WALL_SIZE + CHICKEN_SIZE) / 2.
             {
-                println!("Coliision with wall and chicken");
                 ch_settings.move_dir = Some(ch_settings.move_dir.unwrap() * -1.);
             }
         }
     }
 }
-
-// pub fn spawn_chickens_near_player(
-//     mut commands: Commands,
-//     mut game: ResMut<Game>,
-//     time: Res<Time>,
-//     player_q: Query<&Transform, With<Player>>,
-// ) {
-//     game.chicken_spawn_timer.tick(time.delta());
-//
-//     if game.chicken_spawn_timer.finished() {
-//         let p_pos = player_q.get_single().unwrap();
-//
-//         let chicken_bundle = ChickenBundle::default_near_player(p_pos.translation);
-//         commands.spawn(chicken_bundle);
-//     }
-// }
 
 pub fn spawn_chicken_in_corral(
     mut commands: Commands,

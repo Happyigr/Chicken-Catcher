@@ -18,11 +18,11 @@ pub fn spawn_corral(mut commands: Commands) {
             heigth: DEFAULT_CORRAL_HEIGTH,
         },
         Transform::from_translation(
-            // (get_random_dir()
-            //     * rand::thread_rng().gen_range(
-            //         -MAP_SIZE / 2. - CORRAL_MARGIN_TO_MAP..MAP_SIZE / 2. + CORRAL_MARGIN_TO_MAP,
-            //     ))
-            Vec2::new(100., 100.).extend(CORRAL_Z),
+            (get_random_dir()
+                * rand::thread_rng().gen_range(
+                    -MAP_SIZE / 2. - CORRAL_MARGIN_TO_MAP..MAP_SIZE / 2. + CORRAL_MARGIN_TO_MAP,
+                ))
+            .extend(CORRAL_Z),
         ),
     ));
 }

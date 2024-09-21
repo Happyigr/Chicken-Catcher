@@ -11,7 +11,7 @@ mod werewolf;
 
 use base::{change_base_text, spawn_player_base};
 use bevy::prelude::*;
-use camera::{move_camera, spawn_camera};
+use camera::{move_camera, spawn_camera, zoom_camera};
 use chicken::{behave_chickens, chicken_corral_collision, spawn_chicken_in_corral};
 use chicken_corral::{spawn_corral, spawn_corral_walls};
 use player::{
@@ -53,6 +53,8 @@ fn main() {
             chicken_corral_collision,
         ),
     );
+    // camera systems
+    app.add_systems(Update, (move_camera, zoom_camera));
     // player systems
     app.add_systems(Update, (move_player, move_camera));
     app.add_systems(

@@ -10,6 +10,10 @@ pub const MAX_CAMERA_SPEED: f32 = 50.0;
 // max and min accelerations of camera with the different distance to player
 pub const MAX_CAMERA_DISTANCE_TO_PLAYER: f32 = 100.0;
 pub const MIN_CAMERA_DISTANCE_TO_PLAYER: f32 = 10.0;
+// zoom settings
+pub const ZOOM_OUT_KEY: KeyCode = KeyCode::KeyO;
+pub const ZOOM_IN_KEY: KeyCode = KeyCode::KeyP;
+pub const ZOOM_SPEED: f32 = 0.1;
 
 /// player section
 pub const PLAYER_SPEED: f32 = 100.0;
@@ -46,14 +50,11 @@ pub const CHICKEN_MAD_SPEED: f32 = 75.0;
 pub const CHICKEN_SIZE: f32 = 30.0;
 pub const CHICKEN_BEHAVIOUR_CHANGE_DELTA: f32 = 5.0;
 pub const CHICKEN_COLOR: Color = Color::linear_rgb(0.0, 0.0, 0.5);
-// spawn distances
-pub const MIN_CHICKEN_DISTANCE_TO_PLAYER: f32 = PLAYER_SIZE + 10.0;
-pub const MAX_CHICKEN_DISTANCE_TO_PLAYER: f32 = PLAYER_SIZE + 200.0;
 pub const CHICKEN_Z: f32 = 3.0;
 
 /// Corral section
-pub const DEFAULT_CORRAL_LENGTH: usize = 4;
-pub const DEFAULT_CORRAL_HEIGTH: usize = 4;
+pub const DEFAULT_CORRAL_LENGTH: usize = 8;
+pub const DEFAULT_CORRAL_HEIGTH: usize = 8;
 pub const CORRAL_MARGIN_TO_MAP: f32 = 100.0;
 pub const CORRAL_Z: f32 = 2.0;
 pub const CORRAL_WALL_SIZE: f32 = 50.0;
