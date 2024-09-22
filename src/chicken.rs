@@ -62,15 +62,14 @@ pub struct ChickenBundle {
 
 impl ChickenBundle {
     pub fn default_in_corral(c_pos: Vec3, corral: &ChickenCorral) -> Self {
-        // for now we pickeng just the minimum of th eboth sides of the corral
+        // for now we pickeng just the minimum of the both sides of the corral
         let min_walls_size = corral.length.min(corral.heigth) as f32;
-        // the c_pos is the left upper corner of the corral
-        let c_pos = c_pos + Vec3::new(CORRAL_WALL_SIZE, -CORRAL_WALL_SIZE, 0.);
-        let delta_spawn =
-            rand::thread_rng().gen_range(0.0..min_walls_size * CORRAL_WALL_SIZE - CORRAL_WALL_SIZE);
+        // the c_pos is the center of the corral
+        let delta_spawn = rand::thread_rng()
+            .gen_range(0.0..(min_walls_size * CORRAL_WALL_LENGTH) / 2. - CORRAL_WALL_LENGTH);
         let spawn_dir = Vec2::new(
-            rand::thread_rng().gen_range(0.0..1.0),
-            rand::thread_rng().gen_range(-1.0..0.0),
+            rand::thread_rng().gen_range(-1.0..1.0),
+            rand::thread_rng().gen_range(-1.0..1.0),
         );
 
         Self {
@@ -126,39 +125,10 @@ pub fn chicken_corral_collision(
         for co_pos in corrals_q.iter() {
             if ch_settings.move_dir.is_some()
                 && ch_pos.translation.xy().distance(co_pos.translation.xy())
-                    <= (CORRAL_WALL_SIZE + CHICKEN_SIZE) / 2.
+                    <= (CORRAL_WALL_HEIGTH + CHICKEN_SIZE) / 2.
             {
                 ch_settings.move_dir = Some(ch_settings.move_dir.unwrap() * -1.);
             }
-        }
-    }
-}
-
-pub fn spawn_chicken_in_corral(
-    mut commands: Commands,
-    mut game: ResMut<Game>,
-    time: Res<Time>,
-    corral_q: Query<(&Transform, &ChickenCorral)>,
-) {
-    game.chicken_spawn_timer.tick(time.delta());
-
-    if game.chicken_spawn_timer.finished() {
-        let mut spawned = false;
-
-        corral_q.iter().for_each(|(c_pos, corral)| {
-            if rand::thread_rng().gen_ratio(1, 3) {
-                commands.spawn(ChickenBundle::default_in_corral(c_pos.translation, corral));
-                spawned = true;
-                return;
-            }
-        });
-
-        if !spawned {
-            // if corral wasnt choose, then just spawn in the first one
-            corral_q.iter().for_each(|(c_pos, corral)| {
-                commands.spawn(ChickenBundle::default_in_corral(c_pos.translation, corral));
-                return;
-            })
         }
     }
 }

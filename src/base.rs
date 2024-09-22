@@ -58,43 +58,6 @@ pub struct BaseText {
     pub text_bundle: Text2dBundle,
 }
 
-pub fn spawn_player_base(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut material: ResMut<Assets<ColorMaterial>>,
-) {
-    let base_ent = commands
-        .spawn((BaseBundle::default_on_point(Vec2::ZERO), ForPlayer))
-        .with_children(|parent| {
-            parent.spawn((
-                MaterialMesh2dBundle {
-                    mesh: Mesh2dHandle(meshes.add(Annulus::new(
-                        BASE_CATCHING_RADIUS - 1.,
-                        BASE_CATCHING_RADIUS,
-                    ))),
-                    material: material.add(BASE_CATCHING_RADIUS_COLOR),
-                    ..Default::default()
-                },
-                BaseCatchingRadius::default(),
-                ForPlayer,
-            ));
-        })
-        .id();
-
-    let text_ent = commands
-        .spawn(BaseText {
-            base: BelongToBase { base: base_ent },
-            text_bundle: Text2dBundle {
-                transform: Transform::from_translation(Vec3::new(0., 0., TEXT_Z)),
-                text: Text::from_section("0", TextStyle::default()),
-                ..Default::default()
-            },
-        })
-        .id();
-
-    commands.entity(base_ent).push_children(&[text_ent]);
-}
-
 pub fn change_base_text(base_q: Query<&Base>, mut text_q: Query<(&mut Text, &BelongToBase)>) {
     for (mut text, parent_base) in text_q.iter_mut() {
         let chickens_count = base_q.get(parent_base.base).unwrap().chickens_amount;

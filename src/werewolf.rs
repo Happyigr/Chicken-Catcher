@@ -71,7 +71,7 @@ pub struct WerewolfBundle {
 }
 
 impl WerewolfBundle {
-    fn default_on_point_with_base(spawnpoint: Vec2, base: Entity) -> Self {
+    pub fn default_on_point_with_base(spawnpoint: Vec2, base: Entity) -> Self {
         Self {
             werewolf: Werewolf {
                 base,
@@ -150,49 +150,5 @@ pub fn werewolf_behave(mut werewolf_q: Query<(&mut Transform, &mut Werewolf)>, t
             WerewolfBehaviour::Idle => {}  // do nothing, this is real idle :)
             WerewolfBehaviour::FindChicken => {}
         }
-    }
-}
-
-pub fn spawn_werewolf_with_base(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut material: ResMut<Assets<ColorMaterial>>,
-) {
-    for _ in 0..WEREWOLF_AMOUNT {
-        let spawnpoint = get_random_dir() * WEREWOLF_DISTANCE_TO_CENTER;
-
-        let base_ent = commands
-            .spawn((BaseBundle::default_on_point(spawnpoint), ForWerewolf))
-            .with_children(|parent| {
-                parent.spawn((
-                    MaterialMesh2dBundle {
-                        mesh: Mesh2dHandle(meshes.add(Annulus::new(
-                            BASE_CATCHING_RADIUS - 1.,
-                            BASE_CATCHING_RADIUS,
-                        ))),
-                        material: material.add(BASE_CATCHING_RADIUS_COLOR),
-                        ..Default::default()
-                    },
-                    BaseCatchingRadius::default(),
-                ));
-            })
-            .id();
-
-        commands.spawn(WerewolfBundle::default_on_point_with_base(
-            spawnpoint, base_ent,
-        ));
-
-        let text_ent = commands
-            .spawn(BaseText {
-                base: BelongToBase { base: base_ent },
-                text_bundle: Text2dBundle {
-                    transform: Transform::from_translation(Vec3::new(0., 0., TEXT_Z)),
-                    text: Text::from_section("0", TextStyle::default()),
-                    ..Default::default()
-                },
-            })
-            .id();
-
-        commands.entity(base_ent).push_children(&[text_ent]);
     }
 }

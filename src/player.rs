@@ -169,10 +169,6 @@ pub fn on_remove_catchable(
     ch_sprite.color = CHICKEN_COLOR;
 }
 
-pub fn spawn_player(mut commands: Commands) {
-    commands.spawn(PlayerBundle::default());
-}
-
 pub fn move_player(
     mut player_q: Query<(&mut Transform, &Player)>,
     input: Res<ButtonInput<KeyCode>>,

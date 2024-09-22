@@ -6,23 +6,26 @@ mod map;
 mod misc;
 mod player;
 mod settings;
+mod spawning;
 mod ui;
 mod werewolf;
 
-use base::{change_base_text, spawn_player_base};
+use base::change_base_text;
 use bevy::prelude::*;
 use camera::{move_camera, spawn_camera, zoom_camera};
-use chicken::{behave_chickens, chicken_corral_collision, spawn_chicken_in_corral};
-use chicken_corral::{
-    assign_player_to_corral, assign_werewolf_to_corral, spawn_corral, spawn_corral_walls,
-};
+use chicken::{behave_chickens, chicken_corral_collision};
+use chicken_corral::{assign_player_to_corral, assign_werewolf_to_corral};
 use player::{
     catch_chicken, move_player, on_add_catchable, on_remove_catchable, player_chicken_collision,
-    spawn_player, try_give_chickens_to_base,
+    try_give_chickens_to_base,
 };
 use settings::*;
+use spawning::{
+    spawn_chicken_in_corrals, spawn_corral_walls, spawn_player, spawn_player_base,
+    spawn_player_corral, spawn_werewolf_with_base_and_corrals,
+};
 use ui::{change_ui, cleanup_popups, popup, spawn_ui, EvSpawnPopup};
-use werewolf::{spawn_werewolf_with_base, werewolf_behave};
+use werewolf::werewolf_behave;
 
 fn main() {
     let mut app = App::new();
@@ -40,8 +43,8 @@ fn main() {
             spawn_player,
             spawn_ui,
             spawn_player_base,
-            spawn_werewolf_with_base,
-            spawn_corral,
+            spawn_werewolf_with_base_and_corrals,
+            spawn_player_corral,
         ),
     );
     app.add_systems(
@@ -55,7 +58,7 @@ fn main() {
         Update,
         (
             behave_chickens,
-            spawn_chicken_in_corral,
+            spawn_chicken_in_corrals,
             chicken_corral_collision,
         ),
     );

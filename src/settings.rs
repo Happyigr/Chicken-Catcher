@@ -13,7 +13,7 @@ pub const MIN_CAMERA_DISTANCE_TO_PLAYER: f32 = 10.0;
 // zoom settings
 pub const ZOOM_OUT_KEY: KeyCode = KeyCode::KeyO;
 pub const ZOOM_IN_KEY: KeyCode = KeyCode::KeyP;
-pub const ZOOM_SPEED: f32 = 0.1;
+pub const ZOOM_SPEED: f32 = 0.5;
 
 /// player section
 pub const PLAYER_SPEED: f32 = 100.0;
@@ -34,9 +34,7 @@ pub const WEREWOLF_COLOR: Color = Color::linear_rgb(0.5, 0.0, 0.0);
 pub const WEREWOLF_SPEED: f32 = 100.0;
 pub const WEREWOLF_SIZE: f32 = 50.0;
 pub const WEREWOLF_Z: f32 = 5.0;
-pub const WEREWOLF_DISTANCE_TO_CENTER: f32 = 200.0;
 pub const WEREWOLF_BEHAVIOUR_CHANGE_DELTA: f32 = 2.0;
-pub const WEREWOLF_AMOUNT: usize = 2;
 
 /// base section
 pub const BASE_CATCHING_RADIUS: f32 = 100.0;
@@ -56,8 +54,20 @@ pub const CHICKEN_Z: f32 = 3.0;
 /// Corral section
 pub const DEFAULT_CORRAL_LENGTH: usize = 8;
 pub const DEFAULT_CORRAL_HEIGTH: usize = 8;
-pub const CORRAL_MARGIN_TO_MAP: f32 = 100.0;
 pub const CORRAL_Z: f32 = 2.0;
-pub const CORRAL_WALL_SIZE: f32 = 50.0;
+pub const CORRAL_WALL_HEIGTH: f32 = 20.0;
+// legth must be langet than heigth
+pub const CORRAL_WALL_LENGTH: f32 = 50.0;
+
 pub const CORRAL_WALL_COLOR: Color = Color::linear_rgba(0.1, 0.1, 0.1, 0.1);
 pub const CORRAL_Y_STEP: f32 = 200.0;
+
+// spawning things
+pub const P_CORRAL_DISTANCE_FROM_CENTER: f32 = 200.0;
+// must be bigger as from werewolf!!!
+pub const W_CORRAL_DISTANCE_FROM_CENTER: f32 = 700.0;
+pub const BASE_DISTANCE_FROM_ENTITY: f32 = 0.;
+pub const WEREWOLF_DISTANCE_TO_CENTER: f32 = 500.0;
+pub const WEREWOLF_AMOUNT: usize = 4;
+// preventing spawning the entities in the simillar parts of the circle
+pub const ANGLE_MARGIN: f32 = 10.;
