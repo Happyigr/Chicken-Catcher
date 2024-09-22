@@ -13,7 +13,9 @@ use base::{change_base_text, spawn_player_base};
 use bevy::prelude::*;
 use camera::{move_camera, spawn_camera, zoom_camera};
 use chicken::{behave_chickens, chicken_corral_collision, spawn_chicken_in_corral};
-use chicken_corral::{spawn_corral, spawn_corral_walls};
+use chicken_corral::{
+    assign_player_to_corral, assign_werewolf_to_corral, spawn_corral, spawn_corral_walls,
+};
 use player::{
     catch_chicken, move_player, on_add_catchable, on_remove_catchable, player_chicken_collision,
     spawn_player, try_give_chickens_to_base,
@@ -41,6 +43,10 @@ fn main() {
             spawn_werewolf_with_base,
             spawn_corral,
         ),
+    );
+    app.add_systems(
+        PostStartup,
+        (assign_player_to_corral, assign_werewolf_to_corral).chain(),
     );
     app.add_systems(PostStartup, spawn_corral_walls);
 

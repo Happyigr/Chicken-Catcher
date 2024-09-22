@@ -6,6 +6,7 @@ use rand::Rng;
 
 use crate::{
     base::{BaseBundle, BaseCatchingRadius, BaseText, BelongToBase},
+    chicken_corral::ChickenCorral,
     misc::{get_normilized_dir, get_random_dir},
     settings::*,
 };
@@ -24,8 +25,10 @@ enum WerewolfBehaviour {
 // the base of the werewolf will be stored in this component as entity
 #[derive(Component)]
 pub struct Werewolf {
-    base: Entity,
-    base_pos: Vec2,
+    pub base: Entity,
+    pub base_pos: Vec2,
+    pub corral: Option<Entity>,
+    pub corral_pos: Option<Vec2>,
     behaviour: WerewolfBehaviour,
     move_dir: Option<Vec2>,
     behaviour_change_timer: Timer,
@@ -73,6 +76,8 @@ impl WerewolfBundle {
             werewolf: Werewolf {
                 base,
                 base_pos: spawnpoint,
+                corral_pos: None,
+                corral: None,
                 behaviour: WerewolfBehaviour::Idle,
                 move_dir: None,
                 must_change_beh: false,
@@ -153,38 +158,41 @@ pub fn spawn_werewolf_with_base(
     mut meshes: ResMut<Assets<Mesh>>,
     mut material: ResMut<Assets<ColorMaterial>>,
 ) {
-    let spawnpoint = get_random_dir() * WEREWOLF_DISTANCE_TO_CENTER;
+    for _ in 0..WEREWOLF_AMOUNT {
+        let spawnpoint = get_random_dir() * WEREWOLF_DISTANCE_TO_CENTER;
 
-    let base_ent = commands
-        .spawn((BaseBundle::default_on_point(spawnpoint), ForWerewolf))
-        .with_children(|parent| {
-            parent.spawn((
-                MaterialMesh2dBundle {
-                    mesh: Mesh2dHandle(meshes.add(Annulus::new(
-                        BASE_CATCHING_RADIUS - 1.,
-                        BASE_CATCHING_RADIUS,
-                    ))),
-                    material: material.add(BASE_CATCHING_RADIUS_COLOR),
+        let base_ent = commands
+            .spawn((BaseBundle::default_on_point(spawnpoint), ForWerewolf))
+            .with_children(|parent| {
+                parent.spawn((
+                    MaterialMesh2dBundle {
+                        mesh: Mesh2dHandle(meshes.add(Annulus::new(
+                            BASE_CATCHING_RADIUS - 1.,
+                            BASE_CATCHING_RADIUS,
+                        ))),
+                        material: material.add(BASE_CATCHING_RADIUS_COLOR),
+                        ..Default::default()
+                    },
+                    BaseCatchingRadius::default(),
+                ));
+            })
+            .id();
+
+        commands.spawn(WerewolfBundle::default_on_point_with_base(
+            spawnpoint, base_ent,
+        ));
+
+        let text_ent = commands
+            .spawn(BaseText {
+                base: BelongToBase { base: base_ent },
+                text_bundle: Text2dBundle {
+                    transform: Transform::from_translation(Vec3::new(0., 0., TEXT_Z)),
+                    text: Text::from_section("0", TextStyle::default()),
                     ..Default::default()
                 },
-                BaseCatchingRadius::default(),
-            ));
-        })
-        .id();
-    commands.spawn(WerewolfBundle::default_on_point_with_base(
-        spawnpoint, base_ent,
-    ));
+            })
+            .id();
 
-    let text_ent = commands
-        .spawn(BaseText {
-            base: BelongToBase { base: base_ent },
-            text_bundle: Text2dBundle {
-                transform: Transform::from_translation(Vec3::new(0., 0., TEXT_Z)),
-                text: Text::from_section("0", TextStyle::default()),
-                ..Default::default()
-            },
-        })
-        .id();
-
-    commands.entity(base_ent).push_children(&[text_ent]);
+        commands.entity(base_ent).push_children(&[text_ent]);
+    }
 }

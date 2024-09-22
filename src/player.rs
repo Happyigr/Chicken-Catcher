@@ -5,7 +5,7 @@ use crate::{
     chicken::Chicken,
     settings::*,
     ui::EvSpawnPopup,
-    Game, PlayerRes,
+    PlayerRes,
 };
 
 #[derive(Component)]
@@ -13,6 +13,7 @@ pub struct ForPlayer;
 
 #[derive(Component)]
 pub struct Player {
+    pub corral: Option<Entity>,
     k_up: KeyCode,
     k_down: KeyCode,
     k_left: KeyCode,
@@ -24,6 +25,7 @@ pub struct Player {
 impl Default for Player {
     fn default() -> Self {
         Self {
+            corral: None,
             k_up: PLAYER_KEY_UP,
             k_down: PLAYER_KEY_DOWN,
             k_left: PLAYER_KEY_LEFT,

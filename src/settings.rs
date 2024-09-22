@@ -36,6 +36,7 @@ pub const WEREWOLF_SIZE: f32 = 50.0;
 pub const WEREWOLF_Z: f32 = 5.0;
 pub const WEREWOLF_DISTANCE_TO_CENTER: f32 = 200.0;
 pub const WEREWOLF_BEHAVIOUR_CHANGE_DELTA: f32 = 2.0;
+pub const WEREWOLF_AMOUNT: usize = 2;
 
 /// base section
 pub const BASE_CATCHING_RADIUS: f32 = 100.0;
@@ -59,3 +60,4 @@ pub const CORRAL_MARGIN_TO_MAP: f32 = 100.0;
 pub const CORRAL_Z: f32 = 2.0;
 pub const CORRAL_WALL_SIZE: f32 = 50.0;
 pub const CORRAL_WALL_COLOR: Color = Color::linear_rgba(0.1, 0.1, 0.1, 0.1);
+pub const CORRAL_Y_STEP: f32 = 200.0;
