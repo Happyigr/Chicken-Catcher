@@ -5,7 +5,7 @@ use crate::{
     misc::get_random_dir,
     player::{ForPlayer, PlayerBundle},
     settings::*,
-    werewolf::{ForWerewolf, WerewolfBundle},
+    werewolf::{BelongToWerewolf, ForWerewolf, WerewolfBundle, WerewolfText},
     Game,
 };
 /// This file is containing all the spawning functions.
@@ -133,10 +133,12 @@ pub fn spawn_werewolf_with_base_and_corrals(
             })
             .id();
 
-        commands.spawn(WerewolfBundle::default_on_point_with_base(
-            spawn_dir * WEREWOLF_DISTANCE_TO_CENTER,
-            base_ent,
-        ));
+        let werewolf_ent = commands
+            .spawn(WerewolfBundle::default_on_point_with_base(
+                spawn_dir * WEREWOLF_DISTANCE_TO_CENTER,
+                base_ent,
+            ))
+            .id();
 
         // spawning chickens amount on base
         let text_ent = commands
@@ -162,6 +164,21 @@ pub fn spawn_werewolf_with_base_and_corrals(
                 (spawn_dir * W_CORRAL_DISTANCE_FROM_CENTER).extend(CORRAL_Z),
             ),
         ));
+
+        let text_ent = commands
+            .spawn(WerewolfText {
+                werewolf: BelongToWerewolf {
+                    werewolf: werewolf_ent,
+                },
+                text_bundle: Text2dBundle {
+                    transform: Transform::from_translation(Vec3::new(0., 0., TEXT_Z)),
+                    text: Text::from_section("0", TextStyle::default()),
+                    ..Default::default()
+                },
+            })
+            .id();
+
+        commands.entity(werewolf_ent).push_children(&[text_ent]);
     }
 }
 

@@ -114,7 +114,7 @@ pub fn player_chicken_collision(
 // the function that sends events, after the player presses the control key
 pub fn control_player() {}
 
-// rewrite as event
+// todo! rewrite as event
 pub fn try_give_chickens_to_base(
     mut base_q: Query<(&Transform, &mut Base), (Without<Player>, With<ForPlayer>)>,
     player_q: Query<(&Transform, &Player), Without<Base>>,
@@ -141,7 +141,7 @@ pub fn catch_chicken(
     let player = player_q.get_single().unwrap();
 
     if input.just_pressed(player.k_catch) && player_res.catchable_chicken.is_some() {
-        if player_res.inventory_chickens_amount >= MAX_DEFAULT_INVENTORY_SPACE {
+        if player_res.inventory_chickens_amount >= PLAYER_MAX_INVENTORY_SPACE {
             popup_ev.send_default();
         } else {
             commands

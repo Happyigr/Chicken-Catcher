@@ -25,7 +25,7 @@ use spawning::{
     spawn_player_corral, spawn_werewolf_with_base_and_corrals,
 };
 use ui::{change_ui, cleanup_popups, popup, spawn_ui, EvSpawnPopup};
-use werewolf::werewolf_behave;
+use werewolf::{change_werewolf_text, werewolf_behave};
 
 fn main() {
     let mut app = App::new();
@@ -81,7 +81,7 @@ fn main() {
     // base systems
     app.add_systems(Update, change_base_text);
     // werewolf systems
-    app.add_systems(Update, werewolf_behave);
+    app.add_systems(Update, (werewolf_behave, change_werewolf_text));
 
     // chicken observers
     app.observe(on_add_catchable);

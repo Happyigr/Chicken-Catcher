@@ -20,7 +20,7 @@ pub const PLAYER_SPEED: f32 = 100.0;
 pub const PLAYER_SIZE: f32 = 50.0;
 pub const PLAYER_Z: f32 = 4.0;
 pub const PLAYER_CATCHING_RADIUS: f32 = 100.0;
-pub const MAX_DEFAULT_INVENTORY_SPACE: usize = 5;
+pub const PLAYER_MAX_INVENTORY_SPACE: usize = 5;
 // control
 pub const PLAYER_KEY_UP: KeyCode = KeyCode::KeyW;
 pub const PLAYER_KEY_DOWN: KeyCode = KeyCode::KeyS;
@@ -34,7 +34,11 @@ pub const WEREWOLF_COLOR: Color = Color::linear_rgb(0.5, 0.0, 0.0);
 pub const WEREWOLF_SPEED: f32 = 100.0;
 pub const WEREWOLF_SIZE: f32 = 50.0;
 pub const WEREWOLF_Z: f32 = 5.0;
+pub const WEREWOLF_CATCHING_RADIUS: f32 = 150.0;
+pub const WEREWOLF_CATCHING_TRY_SPEED: f32 = 2.0;
 pub const WEREWOLF_BEHAVIOUR_CHANGE_DELTA: f32 = 2.0;
+pub const WEREWOLF_MIN_DISTANCE_TO_CORRAL: f32 = 100.0;
+pub const WEREWOLF_MAX_INVENTORY_SPACE: usize = 3;
 
 /// base section
 pub const BASE_CATCHING_RADIUS: f32 = 100.0;
@@ -58,14 +62,12 @@ pub const CORRAL_Z: f32 = 2.0;
 pub const CORRAL_WALL_HEIGTH: f32 = 20.0;
 // legth must be langet than heigth
 pub const CORRAL_WALL_LENGTH: f32 = 50.0;
-
 pub const CORRAL_WALL_COLOR: Color = Color::linear_rgba(0.1, 0.1, 0.1, 0.1);
-pub const CORRAL_Y_STEP: f32 = 200.0;
 
 // spawning things
 pub const P_CORRAL_DISTANCE_FROM_CENTER: f32 = 200.0;
-// must be bigger as from werewolf!!!
-pub const W_CORRAL_DISTANCE_FROM_CENTER: f32 = 700.0;
+// werewolf distance from center must be bigger as from werewolf!!!
+pub const W_CORRAL_DISTANCE_FROM_CENTER: f32 = 900.0;
 pub const BASE_DISTANCE_FROM_ENTITY: f32 = 0.;
 pub const WEREWOLF_DISTANCE_TO_CENTER: f32 = 500.0;
 pub const WEREWOLF_AMOUNT: usize = 4;
