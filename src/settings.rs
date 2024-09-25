@@ -2,7 +2,7 @@ use bevy::{color::Color, prelude::KeyCode};
 
 /// Main section
 pub const CHICKEN_SPAWN_DELTA: f32 = 3.0;
-pub const MAP_SIZE: f32 = 1000.0;
+// pub const MAP_SIZE: f32 = 1000.0;
 pub const TEXT_Z: f32 = 10.;
 
 /// Camera section
@@ -21,6 +21,7 @@ pub const PLAYER_SIZE: f32 = 50.0;
 pub const PLAYER_Z: f32 = 4.0;
 pub const PLAYER_CATCHING_RADIUS: f32 = 100.0;
 pub const PLAYER_MAX_INVENTORY_SPACE: usize = 5;
+pub const PLAYER_SIGHT_DISTANCE: f32 = 300.0;
 // control
 pub const PLAYER_KEY_UP: KeyCode = KeyCode::KeyW;
 pub const PLAYER_KEY_DOWN: KeyCode = KeyCode::KeyS;

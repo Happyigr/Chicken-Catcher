@@ -1,4 +1,4 @@
-use bevy::{math::NormedVectorSpace, prelude::Vec2};
+use bevy::prelude::Vec2;
 use rand::Rng;
 
 pub fn get_random_dir() -> Vec2 {

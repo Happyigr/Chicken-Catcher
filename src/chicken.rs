@@ -2,7 +2,6 @@ use crate::{
     chicken_corral::{ChickenCorral, ChickenCorralWall},
     misc::get_random_dir,
     settings::*,
-    Game,
 };
 use bevy::prelude::*;
 use rand::Rng;

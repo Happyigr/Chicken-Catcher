@@ -3,6 +3,7 @@ mod camera;
 mod chicken;
 mod chicken_corral;
 mod map;
+mod minimap;
 mod misc;
 mod player;
 mod settings;

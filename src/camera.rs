@@ -1,3 +1,4 @@
+use bevy::math::NormedVectorSpace;
 use bevy::prelude::*;
 
 use crate::player::Player;
@@ -43,5 +44,19 @@ pub fn zoom_camera(
 
     if input.pressed(ZOOM_IN_KEY) {
         projection.scale += ZOOM_SPEED * time.delta_seconds();
+    }
+}
+
+// for now we have:
+// werewolfes, chickens, player, bases, corrals
+//  we dont want that the player can see chickens, werewolfes and corrals if they are not nesr to
+//  the player
+pub fn toggle_visability(
+    mut sprites_q: Query<(&Transform, &mut Sprite), Without<Player>>,
+    player_q: Query<&Transform, With<Player>>,
+) {
+    let p_pos = player_q.get_single().unwrap();
+    for (s_pos, sprite) in sprites_q.iter_mut() {
+        if s_pos.translation.xy().distance(p_pos.translation.xy()) >= PLAYER_SIGHT_DISTANCE {}
     }
 }

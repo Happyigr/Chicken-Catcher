@@ -1,14 +1,9 @@
-use bevy::{
-    math::NormedVectorSpace,
-    prelude::*,
-    sprite::{MaterialMesh2dBundle, Mesh2dHandle},
-};
+use bevy::prelude::*;
 use rand::Rng;
 
 use crate::{
-    base::{Base, BaseBundle, BaseCatchingRadius, BaseText, BelongToBase},
+    base::Base,
     chicken::Chicken,
-    chicken_corral::ChickenCorral,
     misc::{get_normilized_dir, get_random_dir},
     settings::*,
 };

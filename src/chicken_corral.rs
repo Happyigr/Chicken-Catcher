@@ -4,7 +4,6 @@ use core::fmt::Display;
 use crate::{
     base::Base,
     player::{ForPlayer, Player},
-    settings::*,
     werewolf::Werewolf,
 };
 

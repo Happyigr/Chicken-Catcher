@@ -1,10 +1,6 @@
-use bevy::{
-    math::VectorSpace,
-    prelude::*,
-    sprite::{MaterialMesh2dBundle, Mesh2dHandle},
-};
+use bevy::prelude::*;
 
-use crate::{player::ForPlayer, settings::*};
+use crate::settings::*;
 
 #[derive(Component, Default)]
 pub struct BaseCatchingRadius;
