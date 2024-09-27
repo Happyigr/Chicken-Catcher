@@ -8,6 +8,9 @@ use crate::{
     settings::*,
 };
 
+#[derive(Component)]
+pub struct WerewolfCatchingRadius;
+
 #[derive(Debug, PartialEq, Eq)]
 enum WerewolfBehaviour {
     Idle,
@@ -100,7 +103,7 @@ impl WerewolfBundle {
                 in_corral: false,
                 catching_try_timer: Timer::from_seconds(
                     WEREWOLF_CATCHING_TRY_SPEED,
-                    TimerMode::Once,
+                    TimerMode::Repeating,
                 ),
                 behaviour_change_timer: Timer::from_seconds(
                     WEREWOLF_BEHAVIOUR_CHANGE_DELTA,
@@ -219,7 +222,11 @@ pub fn werewolf_behave(
             WerewolfBehaviour::Catch => {
                 for (ch_pos, ch_ent) in chickens_q.iter() {
                     // if wolf are ready to catch some chicken
-                    if werewolf.catching_try_timer.tick(time.delta()).finished() {
+                    if werewolf
+                        .catching_try_timer
+                        .tick(time.delta())
+                        .just_finished()
+                    {
                         // try to catch it
                         if w_pos.translation.xy().distance(ch_pos.translation.xy())
                             < WEREWOLF_CATCHING_RADIUS
@@ -227,6 +234,7 @@ pub fn werewolf_behave(
                             werewolf.catching_try_timer.reset();
                             werewolf.chickens_in_inventory += 1;
                             commands.entity(ch_ent).despawn();
+                            return;
                         }
                     }
                 }

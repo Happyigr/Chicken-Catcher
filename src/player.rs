@@ -1,4 +1,7 @@
-use bevy::prelude::*;
+use bevy::{
+    prelude::*,
+    sprite::{MaterialMesh2dBundle, Mesh2dHandle},
+};
 
 use crate::{
     base::{Base, BaseCatchingRadius},
@@ -12,27 +15,45 @@ use crate::{
 pub struct ForPlayer;
 
 #[derive(Component)]
+pub struct PlayerCatchingRadius;
+
+#[derive(Component)]
 pub struct Player {
     pub corral: Option<Entity>,
+    speed_multiplier: f32,
+    catching_radius_multiplier: f32,
     k_up: KeyCode,
     k_down: KeyCode,
     k_left: KeyCode,
     k_right: KeyCode,
     k_catch: KeyCode,
     k_give: KeyCode,
+    k_upgrade: KeyCode,
 }
 
 impl Default for Player {
     fn default() -> Self {
         Self {
             corral: None,
+            speed_multiplier: PLAYER_DEFAULT_SPEED_MULTIPLIER,
+            catching_radius_multiplier: PLAYER_DEFAULT_CATCHING_RADIUS_MULTIPLIER,
             k_up: PLAYER_KEY_UP,
             k_down: PLAYER_KEY_DOWN,
             k_left: PLAYER_KEY_LEFT,
             k_right: PLAYER_KEY_RIGHT,
             k_catch: PLAYER_KEY_CATCH,
             k_give: PLAYER_KEY_GIVE,
+            k_upgrade: PLAYER_KEY_UPGRADE,
         }
+    }
+}
+
+impl Player {
+    pub fn speed_up(&mut self) {
+        self.speed_multiplier += PLAYER_LVLUP_SPEED;
+    }
+    pub fn catch_radius_up(&mut self) {
+        self.catching_radius_multiplier += PLAYER_LVLUP_CATCHING_RADIUS;
     }
 }
 
@@ -64,14 +85,14 @@ pub struct ForPlayerCatchable;
 
 pub fn player_chicken_collision(
     mut commands: Commands,
-    player_q: Query<&Transform, With<Player>>,
+    player_q: Query<(&Transform, &Player)>,
     mut player_res: ResMut<PlayerRes>,
     chickens_q: Query<
         (&Transform, Entity),
         (With<Chicken>, Without<Base>, Without<BaseCatchingRadius>),
     >,
 ) {
-    let p_pos = player_q.get_single().unwrap();
+    let (p_pos, player) = player_q.get_single().unwrap();
     // if there are one chicken to catch
     if let Some(catchable_ch_ent) = player_res.catchable_chicken {
         let (catchable_ch_pos, _) = chickens_q.get(catchable_ch_ent).unwrap();
@@ -89,7 +110,7 @@ pub fn player_chicken_collision(
                 player_res.catchable_chicken = Some(ch_ent);
             // and this chicken ran away too far
             } else if p_pos.translation.distance(catchable_ch_pos.translation)
-                >= PLAYER_CATCHING_RADIUS
+                >= PLAYER_CATCHING_RADIUS * player.catching_radius_multiplier
             {
                 // make this chicken not catchable
                 commands
@@ -101,7 +122,9 @@ pub fn player_chicken_collision(
     // else try to find some cathchable chicken
     } else {
         for (ch_pos, ch_ent) in chickens_q.iter() {
-            if p_pos.translation.distance(ch_pos.translation) < PLAYER_CATCHING_RADIUS {
+            if p_pos.translation.distance(ch_pos.translation)
+                < PLAYER_CATCHING_RADIUS * player.catching_radius_multiplier
+            {
                 // and make it cathable
                 player_res.catchable_chicken = Some(ch_ent);
                 commands.entity(ch_ent).insert(ForPlayerCatchable);
@@ -111,10 +134,7 @@ pub fn player_chicken_collision(
     }
 }
 
-// the function that sends events, after the player presses the control key
-pub fn control_player() {}
-
-// todo! rewrite as event
+// todo! the function that sends events, after the player presses the control key
 pub fn try_give_chickens_to_base(
     mut base_q: Query<(&Transform, &mut Base), (Without<Player>, With<ForPlayer>)>,
     player_q: Query<(&Transform, &Player), Without<Base>>,
@@ -190,5 +210,6 @@ pub fn move_player(
         move_dir += Vec2::new(1., 0.);
     }
 
-    p_pos.translation += move_dir.extend(0.) * PLAYER_SPEED * time.delta_seconds();
+    p_pos.translation +=
+        move_dir.extend(0.) * PLAYER_SPEED * player.speed_multiplier * time.delta_seconds();
 }

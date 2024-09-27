@@ -22,6 +22,11 @@ pub const PLAYER_Z: f32 = 4.0;
 pub const PLAYER_CATCHING_RADIUS: f32 = 100.0;
 pub const PLAYER_MAX_INVENTORY_SPACE: usize = 5;
 pub const PLAYER_SIGHT_DISTANCE: f32 = 300.0;
+pub const PLAYER_DEFAULT_CATCHING_RADIUS_MULTIPLIER: f32 = 1.0;
+pub const PLAYER_DEFAULT_SPEED_MULTIPLIER: f32 = 1.0;
+pub const PLAYER_LVLUP_SPEED: f32 = 0.1;
+pub const PLAYER_LVLUP_CATCHING_RADIUS: f32 = 0.1;
+pub const BASE_PLAYER_CATCHING_RADIUS_COLOR: Color = Color::linear_rgb(0.0, 0.5, 0.5);
 // control
 pub const PLAYER_KEY_UP: KeyCode = KeyCode::KeyW;
 pub const PLAYER_KEY_DOWN: KeyCode = KeyCode::KeyS;
@@ -29,6 +34,7 @@ pub const PLAYER_KEY_LEFT: KeyCode = KeyCode::KeyA;
 pub const PLAYER_KEY_RIGHT: KeyCode = KeyCode::KeyD;
 pub const PLAYER_KEY_CATCH: KeyCode = KeyCode::KeyE;
 pub const PLAYER_KEY_GIVE: KeyCode = KeyCode::KeyQ;
+pub const PLAYER_KEY_UPGRADE: KeyCode = KeyCode::KeyC;
 
 /// werewolf section
 pub const WEREWOLF_COLOR: Color = Color::linear_rgb(0.5, 0.0, 0.0);
@@ -40,7 +46,7 @@ pub const WEREWOLF_CATCHING_TRY_SPEED: f32 = 2.0;
 pub const WEREWOLF_BEHAVIOUR_CHANGE_DELTA: f32 = 2.0;
 pub const WEREWOLF_MIN_DISTANCE_TO_CORRAL: f32 = 100.0;
 pub const WEREWOLF_MAX_INVENTORY_SPACE: usize = 3;
-
+pub const WEREWOLF_CATCHING_RADIUS_COLOR: Color = Color::linear_rgb(0.5, 0.0, 0.0);
 /// base section
 pub const BASE_CATCHING_RADIUS: f32 = 100.0;
 pub const BASE_SIZE: f32 = 50.0;
@@ -69,8 +75,8 @@ pub const CORRAL_WALL_COLOR: Color = Color::linear_rgba(0.1, 0.1, 0.1, 0.1);
 pub const P_CORRAL_DISTANCE_FROM_CENTER: f32 = 200.0;
 // werewolf distance from center must be bigger as from werewolf!!!
 pub const W_CORRAL_DISTANCE_FROM_CENTER: f32 = 900.0;
-pub const BASE_DISTANCE_FROM_ENTITY: f32 = 0.;
+pub const BASE_DISTANCE_FROM_ENTITY: f32 = 100.;
 pub const WEREWOLF_DISTANCE_TO_CENTER: f32 = 500.0;
 pub const WEREWOLF_AMOUNT: usize = 4;
 // preventing spawning the entities in the simillar parts of the circle
-pub const ANGLE_MARGIN: f32 = 10.;
+pub const ANGLE_MARGIN: f32 = 15.;

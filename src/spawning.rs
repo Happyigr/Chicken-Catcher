@@ -3,9 +3,11 @@ use crate::{
     chicken::ChickenBundle,
     chicken_corral::{ChickenCorral, ChickenCorralWall, WallType},
     misc::get_random_dir,
-    player::{ForPlayer, PlayerBundle},
+    player::{ForPlayer, PlayerBundle, PlayerCatchingRadius},
     settings::*,
-    werewolf::{BelongToWerewolf, ForWerewolf, WerewolfBundle, WerewolfText},
+    werewolf::{
+        BelongToWerewolf, ForWerewolf, WerewolfBundle, WerewolfCatchingRadius, WerewolfText,
+    },
     Game,
 };
 /// This file is containing all the spawning functions.
@@ -29,8 +31,26 @@ use bevy::{
 use rand::Rng;
 
 // we spawning player in the center of map (0.0,0.0)
-pub fn spawn_player(mut commands: Commands) {
-    commands.spawn(PlayerBundle::default());
+pub fn spawn_player(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut material: ResMut<Assets<ColorMaterial>>,
+) {
+    commands
+        .spawn(PlayerBundle::default())
+        .with_children(|parent| {
+            parent.spawn((
+                MaterialMesh2dBundle {
+                    mesh: Mesh2dHandle(meshes.add(Annulus::new(
+                        PLAYER_CATCHING_RADIUS - 1.,
+                        PLAYER_CATCHING_RADIUS,
+                    ))),
+                    material: material.add(BASE_PLAYER_CATCHING_RADIUS_COLOR),
+                    ..Default::default()
+                },
+                PlayerCatchingRadius,
+            ));
+        });
 }
 
 // then spawning the base of it in the distance of 100 + PLayer_SIZE from player
@@ -104,8 +124,8 @@ pub fn spawn_werewolf_with_base_and_corrals(
         // getting random angle in our part of the werewolf circle
         let angle = rand::thread_rng()
             .gen_range(
-                (angle_step + ANGLE_MARGIN) * i as f32
-                    ..(angle_step - ANGLE_MARGIN) * (i + 1) as f32,
+                (angle_step + ANGLE_MARGIN / 2.) * i as f32
+                    ..(angle_step - ANGLE_MARGIN / 2.) * (i + 1) as f32,
             )
             .to_radians();
         let spawn_dir = Vec2::new(angle.sin(), angle.cos());
@@ -138,6 +158,19 @@ pub fn spawn_werewolf_with_base_and_corrals(
                 spawn_dir * WEREWOLF_DISTANCE_TO_CENTER,
                 base_ent,
             ))
+            .with_children(|parent| {
+                parent.spawn((
+                    MaterialMesh2dBundle {
+                        mesh: Mesh2dHandle(meshes.add(Annulus::new(
+                            WEREWOLF_CATCHING_RADIUS - 1.,
+                            WEREWOLF_CATCHING_RADIUS,
+                        ))),
+                        material: material.add(WEREWOLF_CATCHING_RADIUS_COLOR),
+                        ..Default::default()
+                    },
+                    WerewolfCatchingRadius,
+                ));
+            })
             .id();
 
         // spawning chickens amount on base
