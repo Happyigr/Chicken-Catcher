@@ -27,6 +27,8 @@ pub const PLAYER_DEFAULT_SPEED_MULTIPLIER: f32 = 1.0;
 pub const PLAYER_LVLUP_SPEED: f32 = 0.1;
 pub const PLAYER_LVLUP_CATCHING_RADIUS: f32 = 0.1;
 pub const BASE_PLAYER_CATCHING_RADIUS_COLOR: Color = Color::linear_rgb(0.0, 0.5, 0.5);
+pub const PLAYER_LVLUP_SPEED_PRICE: usize = 5;
+pub const PLAYER_LVLUP_CATCHING_RADIUS_PRICE: usize = 5;
 // control
 pub const PLAYER_KEY_UP: KeyCode = KeyCode::KeyW;
 pub const PLAYER_KEY_DOWN: KeyCode = KeyCode::KeyS;

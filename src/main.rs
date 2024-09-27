@@ -13,26 +13,28 @@ mod werewolf;
 
 use base::change_base_text;
 use bevy::prelude::*;
+use bevy_egui::EguiPlugin;
 use camera::{move_camera, spawn_camera, zoom_camera};
 use chicken::{behave_chickens, chicken_corral_collision};
 use chicken_corral::{assign_player_to_corral, assign_werewolf_to_corral};
 use player::{
     catch_chicken, move_player, on_add_catchable, on_remove_catchable, player_chicken_collision,
-    try_give_chickens_to_base,
+    player_lvlup, try_give_chickens_to_base, EvPlayerLvlup,
 };
 use settings::*;
 use spawning::{
     spawn_chicken_in_corrals, spawn_corral_walls, spawn_player, spawn_player_base,
     spawn_player_corral, spawn_werewolf_with_base_and_corrals,
 };
-use ui::{change_ui, cleanup_popups, popup, spawn_ui, EvSpawnPopup};
+use ui::{change_ui, cleanup_popups, lvl_up_screen, popup, spawn_ui, EvSpawnPopup};
 use werewolf::{change_werewolf_text, werewolf_behave};
 
 fn main() {
     let mut app = App::new();
 
     app.add_event::<EvSpawnPopup>();
-    app.add_plugins(DefaultPlugins);
+    app.add_event::<EvPlayerLvlup>();
+    app.add_plugins((DefaultPlugins, EguiPlugin));
 
     app.insert_resource(Game::default());
     app.insert_resource(PlayerRes::default());
@@ -66,7 +68,7 @@ fn main() {
     // camera systems
     app.add_systems(Update, (move_camera, zoom_camera));
     // player systems
-    app.add_systems(Update, (move_player, move_camera));
+    app.add_systems(Update, (move_player, move_camera, player_lvlup));
     app.add_systems(
         FixedUpdate,
         (
@@ -77,7 +79,7 @@ fn main() {
             .chain(),
     );
     // ui systems
-    app.add_systems(Update, (popup, cleanup_popups));
+    app.add_systems(Update, (popup, cleanup_popups, lvl_up_screen));
     app.add_systems(Update, (change_ui).run_if(resource_changed::<Game>));
     // base systems
     app.add_systems(Update, change_base_text);
@@ -94,8 +96,10 @@ fn main() {
 #[derive(Resource)]
 struct Game {
     chicken_spawn_timer: Timer,
+    lvlup_screen_opened: bool,
 }
 
+// get rid of it and pack this in to the player
 #[derive(Resource)]
 struct PlayerRes {
     inventory_chickens_amount: usize,
@@ -115,6 +119,7 @@ impl Default for Game {
     fn default() -> Self {
         Self {
             chicken_spawn_timer: Timer::from_seconds(CHICKEN_SPAWN_DELTA, TimerMode::Repeating),
+            lvlup_screen_opened: false,
         }
     }
 }

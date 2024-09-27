@@ -219,6 +219,7 @@ pub fn werewolf_behave(
                 w_pos.translation +=
                     werewolf.move_dir.unwrap().extend(0.) * WEREWOLF_SPEED * time.delta_seconds()
             }
+            // todo! if the player thieves chickens the game will crashing, beacuse of despawning
             WerewolfBehaviour::Catch => {
                 for (ch_pos, ch_ent) in chickens_q.iter() {
                     // if wolf are ready to catch some chicken

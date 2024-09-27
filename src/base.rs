@@ -15,7 +15,7 @@ impl Default for Base {
     fn default() -> Self {
         Self {
             radius: BASE_CATCHING_RADIUS,
-            chickens_amount: 0,
+            chickens_amount: 100,
         }
     }
 }

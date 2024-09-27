@@ -11,6 +11,14 @@ use crate::{
     PlayerRes,
 };
 
+pub enum LvlupType {
+    Speed,
+    CatchingRadius,
+}
+
+#[derive(Event)]
+pub struct EvPlayerLvlup(pub LvlupType);
+
 #[derive(Component)]
 pub struct ForPlayer;
 
@@ -20,8 +28,8 @@ pub struct PlayerCatchingRadius;
 #[derive(Component)]
 pub struct Player {
     pub corral: Option<Entity>,
-    speed_multiplier: f32,
-    catching_radius_multiplier: f32,
+    pub speed_multiplier: f32,
+    pub catching_radius_multiplier: f32,
     k_up: KeyCode,
     k_down: KeyCode,
     k_left: KeyCode,
@@ -95,29 +103,33 @@ pub fn player_chicken_collision(
     let (p_pos, player) = player_q.get_single().unwrap();
     // if there are one chicken to catch
     if let Some(catchable_ch_ent) = player_res.catchable_chicken {
-        let (catchable_ch_pos, _) = chickens_q.get(catchable_ch_ent).unwrap();
-
-        for (ch_pos, ch_ent) in chickens_q.iter() {
-            // and one chicken is nearer to the player
-            if p_pos.translation.distance(ch_pos.translation)
-                < p_pos.translation.distance(catchable_ch_pos.translation)
-            {
-                // change the catchable chicken to it
-                commands
-                    .entity(catchable_ch_ent)
-                    .remove::<ForPlayerCatchable>();
-                commands.entity(ch_ent).insert(ForPlayerCatchable);
-                player_res.catchable_chicken = Some(ch_ent);
-            // and this chicken ran away too far
-            } else if p_pos.translation.distance(catchable_ch_pos.translation)
-                >= PLAYER_CATCHING_RADIUS * player.catching_radius_multiplier
-            {
-                // make this chicken not catchable
-                commands
-                    .entity(catchable_ch_ent)
-                    .remove::<ForPlayerCatchable>();
-                player_res.catchable_chicken = None;
+        // and if the chicken alive (was not eaten by werewolf)
+        if let Ok((catchable_ch_pos, _)) = chickens_q.get(catchable_ch_ent) {
+            for (ch_pos, ch_ent) in chickens_q.iter() {
+                // and one chicken is nearer to the player
+                if p_pos.translation.distance(ch_pos.translation)
+                    < p_pos.translation.distance(catchable_ch_pos.translation)
+                {
+                    // change the catchable chicken to it
+                    commands
+                        .entity(catchable_ch_ent)
+                        .remove::<ForPlayerCatchable>();
+                    commands.entity(ch_ent).insert(ForPlayerCatchable);
+                    player_res.catchable_chicken = Some(ch_ent);
+                // and this chicken ran away too far
+                } else if p_pos.translation.distance(catchable_ch_pos.translation)
+                    >= PLAYER_CATCHING_RADIUS * player.catching_radius_multiplier
+                {
+                    // make this chicken not catchable
+                    commands
+                        .entity(catchable_ch_ent)
+                        .remove::<ForPlayerCatchable>();
+                    player_res.catchable_chicken = None;
+                }
             }
+            // if not alive delete this chicken as catchable
+        } else {
+            player_res.catchable_chicken = None;
         }
     // else try to find some cathchable chicken
     } else {
@@ -170,6 +182,47 @@ pub fn catch_chicken(
             player_res.catchable_chicken = None;
             player_res.inventory_chickens_amount += 1;
         }
+    }
+}
+
+pub fn player_lvlup(
+    mut lvlup_ev: EventReader<EvPlayerLvlup>,
+    mut commands: Commands,
+    mut player_q: Query<&mut Player>,
+    mut player_base_q: Query<&mut Base, With<ForPlayer>>,
+    p_catch_rad_q: Query<Entity, With<PlayerCatchingRadius>>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut material: ResMut<Assets<ColorMaterial>>,
+) {
+    let mut player = player_q.get_single_mut().unwrap();
+    let mut p_base = player_base_q.get_single_mut().unwrap();
+
+    for lvlup_type in lvlup_ev.read() {
+        match lvlup_type.0 {
+            LvlupType::Speed => {
+                if p_base.chickens_amount >= PLAYER_LVLUP_SPEED_PRICE {
+                    player.speed_up();
+                    p_base.chickens_amount -= PLAYER_LVLUP_SPEED_PRICE;
+                }
+            }
+            LvlupType::CatchingRadius => {
+                if p_base.chickens_amount >= PLAYER_LVLUP_CATCHING_RADIUS_PRICE {
+                    player.catch_radius_up();
+                    p_base.chickens_amount -= PLAYER_LVLUP_CATCHING_RADIUS_PRICE;
+
+                    commands.entity(p_catch_rad_q.get_single().unwrap()).insert(
+                        MaterialMesh2dBundle {
+                            mesh: Mesh2dHandle(meshes.add(Annulus::new(
+                                PLAYER_CATCHING_RADIUS * player.catching_radius_multiplier - 1.,
+                                PLAYER_CATCHING_RADIUS * player.catching_radius_multiplier,
+                            ))),
+                            material: material.add(BASE_PLAYER_CATCHING_RADIUS_COLOR),
+                            ..Default::default()
+                        },
+                    );
+                }
+            }
+        };
     }
 }
 
